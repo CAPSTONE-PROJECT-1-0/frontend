@@ -5,8 +5,8 @@ import { Github, Linkedin, Mail } from "lucide-react"
 export default function About() {
   const teamMembers = [
     {
-      name: "Takashi Yamada",
-      role: "Project Lead",
+      name: "Yuda Reyvandra Herman",
+      role: "Team Leader",
       image: "/placeholder.svg?height=300&width=300",
       bio: "Spesialis nutrisi dengan pengalaman 8 tahun dalam pengembangan aplikasi kesehatan.",
       social: {
@@ -16,8 +16,8 @@ export default function About() {
       },
     },
     {
-      name: "Ayu Nakamura",
-      role: "UI/UX Designer",
+      name: "Damianus Christopher Samosir",
+      role: "Machine Learning",
       image: "/placeholder.svg?height=300&width=300",
       bio: "Designer dengan fokus pada pengalaman pengguna yang intuitif dan estetika Jepang modern.",
       social: {
@@ -27,8 +27,8 @@ export default function About() {
       },
     },
     {
-      name: "Kenji Tanaka",
-      role: "Full Stack Developer",
+      name: "Reksi Hendra Pratama",
+      role: " Machine Learning",
       image: "/placeholder.svg?height=300&width=300",
       bio: "Developer dengan keahlian dalam Next.js dan pengembangan aplikasi berbasis AI.",
       social: {
@@ -38,8 +38,8 @@ export default function About() {
       },
     },
     {
-      name: "Sakura Ito",
-      role: "Data Scientist",
+      name: "Muhammad Wildan Nur R.",
+      role: "Back End",
       image: "/placeholder.svg?height=300&width=300",
       bio: "Ahli dalam computer vision dan analisis nutrisi berbasis gambar.",
       social: {
@@ -49,8 +49,8 @@ export default function About() {
       },
     },
     {
-      name: "Hiroshi Suzuki",
-      role: "Nutritionist",
+      name: "Marsella Vindriani",
+      role: "Front End",
       image: "/placeholder.svg?height=300&width=300",
       bio: "Ahli gizi dengan spesialisasi dalam makanan Jepang dan pola makan seimbang.",
       social: {
@@ -60,8 +60,8 @@ export default function About() {
       },
     },
     {
-      name: "Yuki Watanabe",
-      role: "Marketing Specialist",
+      name: "Miftahurrohman",
+      role: "Front End",
       image: "/placeholder.svg?height=300&width=300",
       bio: "Spesialis pemasaran digital dengan fokus pada aplikasi kesehatan dan gaya hidup.",
       social: {
