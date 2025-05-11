@@ -127,7 +127,7 @@ export default function Home() {
             Mulai Hidup Sehat Sekarang
           </h2>
           <p className="max-w-[700px] text-white/80 md:text-xl">
-            Bergabunglah dengan ribuan pengguna yang telah meningkatkan pola makan mereka dengan HealthyNippon.
+            Bergabunglah dengan ribuan pengguna yang telah meningkatkan pola makan mereka dengan Oishi Life.
           </p>
           <Button asChild size="lg" className="bg-white text-green-600 hover:bg-white/90">
             <Link href="/dashboard">Mulai Sekarang</Link>

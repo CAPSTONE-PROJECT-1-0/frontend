@@ -10,17 +10,24 @@ export default function Navbar() {
   const pathname = usePathname()
 
   const navItems = [
-    { name: "Beranda", path: "/" },
+    { name: "Home", path: "/" },
     { name: "Dashboard", path: "/dashboard" },
-    { name: "Tentang Kami", path: "/about" },
+    { name: "ABout Us", path: "/about" },
   ]
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 ">
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <Leaf className="h-6 w-6 text-green-500 ml-4" />
-          <span className="text-xl font-bold text-green-600 dark:text-green-400">Oishi Life</span>
+            <img
+                src="/logo.png"
+                alt="Logo"
+                className="img-logo ml-4"
+                width={100}
+                
+            />
+          {/* <Leaf className="h-6 w-6 text-green-500 ml-4" /> */}
+          {/* <span className="text-xl font-bold text-green-600 dark:text-green-400">Oishi Life</span> */}
         </Link>
         <nav className="hidden md:flex gap-6">
           {navItems.map((item) => (
