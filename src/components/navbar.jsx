@@ -20,11 +20,10 @@ export default function Navbar() {
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
             <img
-                src="/logo.png"
+                src="/Logo.png"
                 alt="Logo"
                 className="img-logo ml-4"
                 width={100}
-                
             />
           {/* <Leaf className="h-6 w-6 text-green-500 ml-4" /> */}
           {/* <span className="text-xl font-bold text-green-600 dark:text-green-400">Oishi Life</span> */}
