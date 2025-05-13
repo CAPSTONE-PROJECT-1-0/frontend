@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="container flex flex-col items-center justify-between gap-4 md:flex-row">
         <div className="flex items-center gap-2">
             <img
-                src="/logo.png"
+                src="/Logo.png"
                 alt="Logo"
                 className="img-logo ml-4"
                 width={60}
