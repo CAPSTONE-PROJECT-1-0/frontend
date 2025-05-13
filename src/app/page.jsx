@@ -83,7 +83,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How It Works Section */}
       <section className="w-full py-12 md:py-24">
         <div className="container grid gap-6 md:gap-10">
           <div className="flex flex-col items-center justify-center gap-4 text-center">

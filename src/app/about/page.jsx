@@ -8,7 +8,7 @@ export default function About() {
       name: "Yuda Reyvandra Herman",
       role: "Team Leader",
       image: "/placeholder.svg?height=300&width=300",
-      bio: "Spesialis nutrisi dengan pengalaman 8 tahun dalam pengembangan aplikasi kesehatan.",
+      bio: "Cohort machine learning Coding Camp Powered by DBS Foundation.",
       social: {
         github: "#",
         linkedin: "#",
@@ -19,7 +19,7 @@ export default function About() {
       name: "Damianus Christopher Samosir",
       role: "Machine Learning",
       image: "/placeholder.svg?height=300&width=300",
-      bio: "Designer dengan fokus pada pengalaman pengguna yang intuitif dan estetika Jepang modern.",
+      bio: "Cohort machine learning Coding Camp Powered by DBS Foundation.",
       social: {
         github: "#",
         linkedin: "#",
@@ -30,7 +30,7 @@ export default function About() {
       name: "Reksi Hendra Pratama",
       role: " Machine Learning",
       image: "/placeholder.svg?height=300&width=300",
-      bio: "Developer dengan keahlian dalam Next.js dan pengembangan aplikasi berbasis AI.",
+      bio: "Cohort machine learning Coding Camp Powered by DBS Foundation.",
       social: {
         github: "#",
         linkedin: "#",
@@ -41,33 +41,33 @@ export default function About() {
       name: "Muhammad Wildan Nur R.",
       role: "Back End",
       image: "/placeholder.svg?height=300&width=300",
-      bio: "Ahli dalam computer vision dan analisis nutrisi berbasis gambar.",
+      bio: "Cohort Full Stack Coding Camp Powered by DBS Foundation.",
       social: {
         github: "#",
         linkedin: "#",
-        email: "sakura@example.com",
+        email: "@gmail.com",
       },
     },
     {
       name: "Marsella Vindriani",
       role: "Front End",
       image: "/placeholder.svg?height=300&width=300",
-      bio: "Ahli gizi dengan spesialisasi dalam makanan Jepang dan pola makan seimbang.",
+      bio: "Cohort Full Stack Coding Camp Powered by DBS Foundation.",
       social: {
         github: "#",
         linkedin: "#",
-        email: "hiroshi@example.com",
+        email: "@gmail.com",
       },
     },
     {
       name: "Miftahurrohman",
       role: "Front End",
       image: "/placeholder.svg?height=300&width=300",
-      bio: "Spesialis pemasaran digital dengan fokus pada aplikasi kesehatan dan gaya hidup.",
+      bio: "Cohort Full Stack Coding Camp Powered by DBS Foundation.",
       social: {
         github: "#",
         linkedin: "#",
-        email: "yuki@example.com",
+        email: "mf.rohman0101@gmail.com",
       },
     },
   ]
@@ -77,8 +77,7 @@ export default function About() {
       <div className="flex flex-col items-center text-center mb-12">
         <h1 className="text-3xl font-bold mb-4 text-green-700 dark:text-green-400">Tentang Kami</h1>
         <p className="max-w-3xl text-muted-foreground">
-          HealthyNippon adalah aplikasi rekomendasi makanan sehat yang menggabungkan kecerdasan buatan dengan
-          pengetahuan nutrisi untuk membantu Anda membuat pilihan makanan yang lebih sehat dengan sentuhan Jepang.
+          Oishi Life adalah aplikasi rekomendasi makanan sehat yang menggabungkan Machine Learning dengan pengetahuan nutrisi untuk membantu Anda membuat pilihan makanan yang lebih sehat.
         </p>
       </div>
 
@@ -138,7 +137,7 @@ export default function About() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Inovasi</h3>
                 <p className="text-muted-foreground">
-                  Menggunakan teknologi AI terbaru untuk menganalisis dan memberikan rekomendasi makanan yang personal.
+                  Menggunakan teknologi Computer Vision untuk menganalisis dan memberikan rekomendasi makanan yang personal.
                 </p>
               </div>
             </CardContent>
