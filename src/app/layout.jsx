@@ -7,8 +7,8 @@ import Footer from "@/components/footer"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "HealthyNippon - Rekomendasi Makanan Sehat",
-  description: "Aplikasi rekomendasi makanan sehat dengan tema Jepang",
+  title: "Osihi Life - Rekomendasi Makanan Sehat",
+  description: "Aplikasi rekomendasi makanan sehat integrasi dengan Machine Learning ",
 }
 
 export default function RootLayout({ children }) {
