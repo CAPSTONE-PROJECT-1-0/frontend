@@ -10,7 +10,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-black/40"></div>
         <div className="container relative z-10 flex flex-col items-center justify-center gap-4 text-center">
           <h1 className="text-3xl font-bold tracking-tighter text-white sm:text-5xl md:text-6xl">
-            Rekomendasi Makanan Sehat <span className="text-green-400">Osihi Life</span>
+            Rekomendasi Makanan Sehat <span className="text-green-400">Oishi Life</span>
           </h1>
           <p className="max-w-[700px] text-white md:text-xl">
             Analisis keseimbangan gizi makanan Anda dan dapatkan rekomendasi makanan sehat dengan bahan yang sama.
