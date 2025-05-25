@@ -56,7 +56,7 @@ export default function About() {
       social: {
         github: "#",
         linkedin: "#",
-        email: "@gmail.com",
+        email: "marcelavind61@gmail.com",
       },
     },
     {
