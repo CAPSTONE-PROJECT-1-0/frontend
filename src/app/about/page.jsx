@@ -10,9 +10,9 @@ export default function About() {
       image: "/placeholder.svg?height=300&width=300",
       bio: "Cohort machine learning Coding Camp Powered by DBS Foundation.",
       social: {
-        github: "#",
+        github: "https://github.com/Reyvndraa",
         linkedin: "#",
-        email: "takashi@example.com",
+        email: "reyvandrayuda@gmail.com",
       },
     },
     {
@@ -21,9 +21,9 @@ export default function About() {
       image: "/placeholder.svg?height=300&width=300",
       bio: "Cohort machine learning Coding Camp Powered by DBS Foundation.",
       social: {
-        github: "#",
+        github: "https://github.com/chrstprs",
         linkedin: "#",
-        email: "ayu@example.com",
+        email: "christophersamosir@gmail.com",
       },
     },
     {
@@ -32,9 +32,9 @@ export default function About() {
       image: "/placeholder.svg?height=300&width=300",
       bio: "Cohort machine learning Coding Camp Powered by DBS Foundation.",
       social: {
-        github: "#",
+        github: "https://github.com/ReksiHendraPratama",
         linkedin: "#",
-        email: "kenji@example.com",
+        email: "reksihendrapratama637@gmail.com",
       },
     },
     {
@@ -43,9 +43,9 @@ export default function About() {
       image: "/placeholder.svg?height=300&width=300",
       bio: "Cohort Full Stack Coding Camp Powered by DBS Foundation.",
       social: {
-        github: "#",
+        github: "https://github.com/neorwildan",
         linkedin: "#",
-        email: "@gmail.com",
+        email: "wildan5533@gmail.com",
       },
     },
     {
@@ -54,7 +54,7 @@ export default function About() {
       image: "/placeholder.svg?height=300&width=300",
       bio: "Cohort Full Stack Coding Camp Powered by DBS Foundation.",
       social: {
-        github: "#",
+        github: "https://github.com/marsellavindriani",
         linkedin: "#",
         email: "marcelavind61@gmail.com",
       },
@@ -65,7 +65,7 @@ export default function About() {
       image: "/placeholder.svg?height=300&width=300",
       bio: "Cohort Full Stack Coding Camp Powered by DBS Foundation.",
       social: {
-        github: "#",
+        github: "https://github.com/mf-rohman",
         linkedin: "#",
         email: "mf.rohman0101@gmail.com",
       },

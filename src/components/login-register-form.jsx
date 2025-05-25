@@ -54,7 +54,6 @@ export default function LoginRegisterForm() {
     const password = formData.get("password")
     const confirmPassword = formData.get("confirmPassword")
 
-    // Basic validation
     if (!name || !email || !password || !confirmPassword) {
       setError("All fields are required")
       setIsLoading(false)

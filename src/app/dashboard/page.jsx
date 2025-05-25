@@ -28,7 +28,6 @@ export default function Dashboard() {
   }
 
   const handleCameraCapture = () => {
-    // In a real app, this would access the camera
     toast({
       title: "Akses Kamera",
       description: "Fitur kamera akan tersedia dalam versi berikutnya.",
@@ -47,7 +46,6 @@ export default function Dashboard() {
 
     setAnalyzing(true)
 
-    // Simulate analysis delay
     setTimeout(() => {
       setAnalyzing(false)
       setAnalyzed(true)
