@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,12 +8,27 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { Camera, Upload, RefreshCw, Check, X, Info, Salad } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { useAuth } from "@/contexts/auth-context"
+import ProtectedRoute from "@/components/auth/protected-route"
 
 export default function Dashboard() {
+  return (
+    <ProtectedRoute>
+      <DashboardContent />
+    </ProtectedRoute>
+  )
+}
+
+function DashboardContent() {
   const { toast } = useToast()
+  const { user } = useAuth()
   const [selectedImage, setSelectedImage] = useState(null)
   const [analyzing, setAnalyzing] = useState(false)
   const [analyzed, setAnalyzed] = useState(false)
+  const [cameraStream, setCameraStream] = useState(null)
+  const [showCamera, setShowCamera] = useState(false)
+  const videoRef = useRef(null)
+  const canvasRef = useRef(null)
 
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0]
@@ -27,14 +42,63 @@ export default function Dashboard() {
     }
   }
 
-  const handleCameraCapture = () => {
-    toast({
-      title: "Akses Kamera",
-      description: "Fitur kamera akan tersedia dalam versi berikutnya.",
-    })
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          facingMode: "environment", // Use back camera on mobile
+        },
+      })
+      setCameraStream(stream)
+      setShowCamera(true)
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream
+      }
+    } catch (error) {
+      console.error("Error accessing camera:", error)
+      toast({
+        title: "Error Kamera",
+        description: "Tidak dapat mengakses kamera. Pastikan Anda memberikan izin akses kamera.",
+        variant: "destructive",
+      })
+    }
   }
 
-  const analyzeFood = () => {
+  const stopCamera = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach((track) => track.stop())
+      setCameraStream(null)
+    }
+    setShowCamera(false)
+  }
+
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const canvas = canvasRef.current
+      const video = videoRef.current
+      const context = canvas.getContext("2d")
+
+      canvas.width = video.videoWidth
+      canvas.height = video.videoHeight
+
+      context.drawImage(video, 0, 0, canvas.width, canvas.height)
+
+      const imageDataUrl = canvas.toDataURL("image/jpeg")
+      setSelectedImage(imageDataUrl)
+      setAnalyzed(false)
+      stopCamera()
+
+      toast({
+        title: "Foto Berhasil Diambil",
+        description: "Foto makanan berhasil diambil dari kamera.",
+      })
+    }
+  }
+
+  const analyzeFood = async () => {
     if (!selectedImage) {
       toast({
         title: "Tidak ada gambar",
@@ -46,9 +110,33 @@ export default function Dashboard() {
 
     setAnalyzing(true)
 
+    // TODO: Replace with actual API call
+    // try {
+    //   const response = await fetch('/api/analyze-food', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({
+    //       image: selectedImage,
+    //       userId: user.id
+    //     })
+    //   })
+    //   const data = await response.json()
+    //   // Handle response
+    // } catch (error) {
+    //   console.error('Error analyzing food:', error)
+    // }
+
+    // Simulate analysis delay
     setTimeout(() => {
       setAnalyzing(false)
       setAnalyzed(true)
+
+      // TODO: Save analysis to backend
+      // saveAnalysisToBackend({
+      //   userId: user.id,
+      //   image: selectedImage,
+      //   results: analysisResults
+      // })
     }, 2000)
   }
 
@@ -75,10 +163,13 @@ export default function Dashboard() {
   ]
 
   return (
-    <div className="container py-8  m-[40px]">
-      <h1 className="text-3xl font-bold mb-6 text-green-700 dark:text-green-400  m-[40px]">Dashboard Analisis Makanan</h1>
+    <div className="container py-8">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-green-700 dark:text-green-400">Dashboard Analisis Makanan</h1>
+        <p className="text-muted-foreground">Selamat datang, {user?.name}!</p>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6  m-[40px]">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2">
           <Card className="h-full">
             <CardHeader>
@@ -104,7 +195,7 @@ export default function Dashboard() {
                       ) : (
                         <>
                           <Upload className="h-10 w-10 text-green-500 mb-2" />
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-sm text-muted-foreground text-center px-4">
                             Klik untuk memilih gambar atau seret dan lepas
                           </p>
                         </>
@@ -120,13 +211,34 @@ export default function Dashboard() {
                 </TabsContent>
                 <TabsContent value="camera" className="space-y-4">
                   <div className="flex justify-center">
-                    <div
-                      className="relative w-full max-w-md h-64 border-2 border-dashed border-green-200 dark:border-green-800 rounded-lg flex flex-col items-center justify-center cursor-pointer"
-                      onClick={handleCameraCapture}
-                    >
-                      <Camera className="h-10 w-10 text-green-500 mb-2" />
-                      <p className="text-sm text-muted-foreground">Klik untuk mengakses kamera</p>
-                    </div>
+                    {showCamera ? (
+                      <div className="relative w-full max-w-md">
+                        <video
+                          ref={videoRef}
+                          autoPlay
+                          playsInline
+                          className="w-full h-64 object-cover rounded-lg border-2 border-green-200 dark:border-green-800"
+                        />
+                        <canvas ref={canvasRef} className="hidden" />
+                        <div className="flex gap-2 mt-4 justify-center">
+                          <Button onClick={capturePhoto} className="bg-green-600 hover:bg-green-700">
+                            <Camera className="mr-2 h-4 w-4" />
+                            Ambil Foto
+                          </Button>
+                          <Button onClick={stopCamera} variant="outline">
+                            Batal
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div
+                        className="relative w-full max-w-md h-64 border-2 border-dashed border-green-200 dark:border-green-800 rounded-lg flex flex-col items-center justify-center cursor-pointer"
+                        onClick={startCamera}
+                      >
+                        <Camera className="h-10 w-10 text-green-500 mb-2" />
+                        <p className="text-sm text-muted-foreground text-center px-4">Klik untuk mengakses kamera</p>
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
               </Tabs>
@@ -214,7 +326,7 @@ export default function Dashboard() {
       </div>
 
       {analyzed && (
-        <div className="mt-8  m-[40px]">
+        <div className="mt-8">
           <h2 className="text-2xl font-bold mb-4 text-green-700 dark:text-green-400">Rekomendasi Makanan Sehat</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {recommendedFoods.map((food, index) => (
@@ -265,7 +377,7 @@ export default function Dashboard() {
             <Card key={item} className="overflow-hidden">
               <div className="relative h-32 w-full">
                 <Image
-                  src={`/globe.svg?height=150&width=300`}
+                  src={`/placeholder.svg?height=150&width=300`}
                   alt={`Food history ${item}`}
                   fill
                   className="object-cover"

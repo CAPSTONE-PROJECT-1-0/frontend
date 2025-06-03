@@ -1,31 +1,56 @@
+"use client"
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Camera, Upload, Utensils, Leaf, Heart } from "lucide-react"
+import { Camera, Upload, Utensils, Leaf, Heart, Shield } from "lucide-react"
+import { useAuth } from "@/contexts/auth-context"
 
 export default function Home() {
+  const { isAuthenticated } = useAuth()
+
   return (
-    <div className="flex flex-col items-center m-[40px]" >
+    <div className="flex flex-col items-center">
+      {/* Hero Section */}
       <section className="w-full py-12 md:py-24 lg:py-32 bg-[url('/placeholder.svg?height=600&width=1200')] bg-cover bg-center relative">
         <div className="absolute inset-0 bg-black/40"></div>
         <div className="container relative z-10 flex flex-col items-center justify-center gap-4 text-center">
           <h1 className="text-3xl font-bold tracking-tighter text-white sm:text-5xl md:text-6xl">
-            Rekomendasi Makanan Sehat <span className="text-green-400">Oishi Life</span>
+            Current Healthy<span className="text-green-400"> Food Recommendations</span>
           </h1>
           <p className="max-w-[700px] text-white md:text-xl">
-            Analisis keseimbangan gizi makanan Anda dan dapatkan rekomendasi makanan sehat dengan bahan yang sama.
+            Get healthy food recommendations and find your health and happiness with Oishi Life. Fresh outside healthy inside
           </p>
           <div className="flex flex-col gap-2 min-[400px]:flex-row">
-            <Button asChild size="lg" className="bg-green-600 hover:bg-green-700">
-              <Link href="/dashboard">Mulai Sekarang</Link>
-            </Button>
-            <Button asChild size="lg" variant="outline" className="bg-white/10 text-white hover:bg-white/20">
-              <Link href="/about">Pelajari Lebih Lanjut</Link>
-            </Button>
+            {isAuthenticated ? (
+              <Button asChild size="lg" className="bg-green-600 hover:bg-green-700">
+                <Link href="/dashboard">Open Dashboard</Link>
+              </Button>
+            ) : (
+              <>
+                <Button asChild size="lg" className="bg-green-600 hover:bg-green-700">
+                  <Link href="/register">Get Started</Link>
+                </Button>
+                <Button asChild size="lg" variant="outline" className="bg-white/10 text-white hover:bg-white/20">
+                  <Link href="/login">Login</Link>
+                </Button>
+              </>
+            )}
           </div>
+          {!isAuthenticated && (
+            <div className="mt-4 p-4 bg-amber-500/20 rounded-lg border border-amber-400/30">
+              <div className="flex items-center gap-2 text-amber-100">
+                <Shield className="h-5 w-5" />
+                <span className="text-sm font-medium">
+                  Silakan login terlebih dahulu untuk mengakses fitur analisis makanan
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
+      {/* Features Section */}
       <section className="w-full py-12 md:py-24 bg-green-50 dark:bg-green-950/20">
         <div className="container grid gap-6 md:gap-10">
           <div className="flex flex-col items-center justify-center gap-4 text-center">
@@ -36,7 +61,7 @@ export default function Home() {
               Nikmati kemudahan menganalisis makanan Anda dengan teknologi canggih kami.
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3 m-[40px]" >
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <Card className="border-2 border-green-100 dark:border-green-900/50">
               <CardHeader className="flex flex-row items-center gap-4">
                 <Camera className="h-8 w-8 text-green-600 dark:text-green-400" />
@@ -83,6 +108,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* How It Works Section */}
       <section className="w-full py-12 md:py-24">
         <div className="container grid gap-6 md:gap-10">
           <div className="flex flex-col items-center justify-center gap-4 text-center">
@@ -99,21 +125,27 @@ export default function Home() {
                 <Camera className="h-8 w-8 text-green-600 dark:text-green-400" />
               </div>
               <h3 className="text-xl font-bold">Langkah 1</h3>
-              <p className="text-muted-foreground">Ambil foto makanan atau unggah gambar dari galeri Anda.</p>
+              <p className="text-muted-foreground">
+                Daftar atau masuk ke akun Anda, lalu ambil foto makanan atau unggah gambar dari galeri.
+              </p>
             </div>
             <div className="flex flex-col items-center text-center gap-2">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/50">
                 <Leaf className="h-8 w-8 text-green-600 dark:text-green-400" />
               </div>
               <h3 className="text-xl font-bold">Langkah 2</h3>
-              <p className="text-muted-foreground">Sistem kami menganalisis keseimbangan gizi makanan Anda.</p>
+              <p className="text-muted-foreground">
+                Sistem kami menganalisis keseimbangan gizi makanan Anda secara otomatis.
+              </p>
             </div>
             <div className="flex flex-col items-center text-center gap-2">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/50">
                 <Heart className="h-8 w-8 text-green-600 dark:text-green-400" />
               </div>
               <h3 className="text-xl font-bold">Langkah 3</h3>
-              <p className="text-muted-foreground">Dapatkan rekomendasi makanan sehat dengan bahan yang sama.</p>
+              <p className="text-muted-foreground">
+                Dapatkan rekomendasi makanan sehat dengan bahan yang sama dan simpan riwayat analisis.
+              </p>
             </div>
           </div>
         </div>
@@ -126,11 +158,17 @@ export default function Home() {
             Mulai Hidup Sehat Sekarang
           </h2>
           <p className="max-w-[700px] text-white/80 md:text-xl">
-            Bergabunglah dengan pengguna yang telah meningkatkan pola makan sehat mereka dengan Oishi Life.
+            Bergabunglah dengan ribuan pengguna yang telah meningkatkan pola makan mereka dengan Oishi Life.
           </p>
-          <Button asChild size="lg" className="bg-white text-green-600 hover:bg-white/90">
-            <Link href="/dashboard">Mulai Sekarang</Link>
-          </Button>
+          {isAuthenticated ? (
+            <Button asChild size="lg" className="bg-white text-green-600 hover:bg-white/90">
+              <Link href="/dashboard">Buka Dashboard</Link>
+            </Button>
+          ) : (
+            <Button asChild size="lg" className="bg-white text-green-600 hover:bg-white/90">
+              <Link href="/register">Daftar Sekarang</Link>
+            </Button>
+          )}
         </div>
       </section>
     </div>

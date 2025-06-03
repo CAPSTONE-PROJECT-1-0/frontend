@@ -1,0 +1,177 @@
+"use client"
+
+import { useState } from "react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { useAuth } from "@/contexts/auth-context"
+import { useToast } from "@/hooks/use-toast"
+import { Eye, EyeOff, Leaf } from "lucide-react"
+
+export default function RegisterForm() {
+    const [name, setName] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
+    const [showPassword, setShowPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const { register } = useAuth()
+    const { toast } = useToast()
+    const router = useRouter()
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+
+        if (password !== confirmPassword) {
+            toast({
+                title: "Password Tidak Cocok",
+                description: "Password dan konfirmasi password harus sama",
+                variant: "destructive",
+            })
+            return
+        }
+
+        if (password.length < 6) {
+            toast({
+                title: "Password Terlalu Pendek",
+                description: "Password minimal 6 karakter",
+                variant: "destructive",
+            })
+            return
+        }
+
+        setLoading(true)
+
+        const result = await register(name, email, password)
+
+        if (result.success) {
+            toast({
+                title: "Registrasi Berhasil",
+                description: `Selamat datang, ${result.user.name}!`,
+            })
+            router.push("/dashboard")
+        } else {
+            toast({
+                title: "Registrasi Gagal",
+                description: result.error,
+                variant: "destructive",
+            })
+        }
+
+        setLoading(false)
+    }
+
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-green-50 dark:bg-green-950/20 px-4">
+            <Card className="w-full max-w-md">
+                <CardHeader className="text-center">
+                    <div className="flex justify-center mb-4">
+                        <Leaf className="h-12 w-12 text-green-500" />
+                    </div>
+                    <CardTitle className="text-2xl font-bold text-green-700 dark:text-green-400">Daftar Oishi Life</CardTitle>
+                    <CardDescription>Buat akun baru untuk mulai menganalisis makanan sehat</CardDescription>
+                </CardHeader>
+                <form onSubmit={handleSubmit}>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="name">Nama Lengkap</Label>
+                            <Input
+                                id="name"
+                                type="text"
+                                placeholder="Masukkan nama lengkap"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                placeholder="contoh@email.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="password">Password</Label>
+                            <div className="relative">
+                                <Input
+                                    id="password"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="Minimal 6 karakter"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                />
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                >
+                                    {showPassword ? (
+                                        <EyeOff className="h-4 w-4 text-muted-foreground" />
+                                    ) : (
+                                        <Eye className="h-4 w-4 text-muted-foreground" />
+                                    )}
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="confirmPassword">Konfirmasi Password</Label>
+                            <div className="relative">
+                                <Input
+                                    id="confirmPassword"
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    placeholder="Ulangi password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    required
+                                />
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                >
+                                    {showConfirmPassword ? (
+                                        <EyeOff className="h-4 w-4 text-muted-foreground" />
+                                    ) : (
+                                        <Eye className="h-4 w-4 text-muted-foreground" />
+                                    )}
+                                </Button>
+                            </div>
+                        </div>
+                    </CardContent>
+                    <CardFooter className="flex flex-col space-y-4">
+                        <Button
+                            type="submit"
+                            className="w-full bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
+                            disabled={loading}
+                        >
+                            {loading ? "Memproses..." : "Daftar"}
+                        </Button>
+                        <p className="text-sm text-center text-muted-foreground">
+                            Sudah punya akun?{" "}
+                            <Link
+                                href="/login"
+                                className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+                            >
+                                Masuk di sini
+                            </Link>
+                        </p>
+                    </CardFooter>
+                </form>
+            </Card>
+        </div>
+    )
+}
