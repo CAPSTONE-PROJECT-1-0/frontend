@@ -239,13 +239,11 @@
   background: hsl(var(--foreground));
 }
 
-/* Focus styles */
 .focus-visible {
   outline: 2px solid hsl(var(--ring));
   outline-offset: 2px;
 }
 
-/* Button base styles */
 button {
   cursor: pointer;
 }
@@ -255,7 +253,7 @@ button:disabled {
   opacity: 0.5;
 }
 
-/* Input base styles */
+
 input,
 textarea {
   font-family: inherit;
@@ -267,7 +265,7 @@ textarea:focus {
   outline-offset: 2px;
 }
 
-/* Card hover effects */
+
 .card-hover {
   transition: all 0.2s ease-in-out;
 }
@@ -278,7 +276,6 @@ textarea:focus {
     0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
-/* Loading spinner */
 .loading-spinner {
   animation: spin 1s linear infinite;
 }
@@ -292,7 +289,6 @@ textarea:focus {
   }
 }
 
-/* Fade in animation */
 .fade-in {
   animation: fadeIn 0.3s ease-in-out;
 }
@@ -306,4 +302,86 @@ textarea:focus {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes float-delayed {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float-delayed 3s ease-in-out infinite 1s;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.6s ease-out forwards;
+}
+
+
+.gradient-text {
+  background: linear-gradient(135deg, #22c55e, #3b82f6, #8b5cf6);
+  background-size: 200% 200%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 3s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.backdrop-blur-custom {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }

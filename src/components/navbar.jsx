@@ -20,6 +20,7 @@ export default function Navbar() {
 
   const navItems = [
     { name: "Home", path: "/" },
+    { name: "Education", path: "/education" },
     ...(isAuthenticated ? [{ name: "Dashboard", path: "/dashboard" }] : []),
     { name: "About us", path: "/about" },
   ]
