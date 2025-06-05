@@ -9,13 +9,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
-import { Eye, EyeOff, Leaf } from "lucide-react"
+import { Eye, EyeOff, Leaf, Loader2 } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export default function LoginForm() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [error, setError] = useState("")
     const { login } = useAuth()
     const { toast } = useToast()
     const router = useRouter()
@@ -23,6 +25,20 @@ export default function LoginForm() {
     const handleSubmit = async (e) => {
         e.preventDefault()
         setLoading(true)
+        setError("")
+
+        // Basic validation
+        if (!email || !password) {
+            setError("Email dan password harus diisi")
+            setLoading(false)
+            return
+        }
+
+        if (!email.includes("@")) {
+            setError("Format email tidak valid")
+            setLoading(false)
+            return
+        }
 
         const result = await login(email, password)
 
@@ -33,6 +49,7 @@ export default function LoginForm() {
             })
             router.push("/dashboard")
         } else {
+            setError(result.error)
             toast({
                 title: "Login Gagal",
                 description: result.error,
@@ -51,12 +68,18 @@ export default function LoginForm() {
                         <Leaf className="h-12 w-12 text-green-500" />
                     </div>
                     <CardTitle className="text-2xl font-bold text-green-700 dark:text-green-400">
-                        Masuk ke Oishi Life
+                        Masuk ke HealthyNippon
                     </CardTitle>
                     <CardDescription>Masukkan email dan password Anda untuk mengakses dashboard</CardDescription>
                 </CardHeader>
                 <form onSubmit={handleSubmit}>
                     <CardContent className="space-y-4">
+                        {error && (
+                            <Alert variant="destructive">
+                                <AlertDescription>{error}</AlertDescription>
+                            </Alert>
+                        )}
+
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
                             <Input
@@ -65,6 +88,7 @@ export default function LoginForm() {
                                 placeholder="contoh@email.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                                disabled={loading}
                                 required
                             />
                         </div>
@@ -77,6 +101,7 @@ export default function LoginForm() {
                                     placeholder="Masukkan password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
+                                    disabled={loading}
                                     required
                                 />
                                 <Button
@@ -85,6 +110,7 @@ export default function LoginForm() {
                                     size="sm"
                                     className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                                     onClick={() => setShowPassword(!showPassword)}
+                                    disabled={loading}
                                 >
                                     {showPassword ? (
                                         <EyeOff className="h-4 w-4 text-muted-foreground" />
@@ -94,11 +120,6 @@ export default function LoginForm() {
                                 </Button>
                             </div>
                         </div>
-                        <div className="text-sm text-muted-foreground">
-                            <p>Demo akun:</p>
-                            <p>Email: user@example.com</p>
-                            <p>Password: password123</p>
-                        </div>
                     </CardContent>
                     <CardFooter className="flex flex-col space-y-4">
                         <Button
@@ -106,7 +127,14 @@ export default function LoginForm() {
                             className="w-full bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
                             disabled={loading}
                         >
-                            {loading ? "Memproses..." : "Masuk"}
+                            {loading ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Memproses...
+                                </>
+                            ) : (
+                                "Masuk"
+                            )}
                         </Button>
                         <p className="text-sm text-center text-muted-foreground">
                             Belum punya akun?{" "}

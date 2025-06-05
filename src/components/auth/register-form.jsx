@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
-import { Eye, EyeOff, Leaf } from "lucide-react"
+import { Eye, EyeOff, Leaf, Loader2 } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export default function RegisterForm() {
     const [name, setName] = useState("")
@@ -19,32 +20,46 @@ export default function RegisterForm() {
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [error, setError] = useState("")
     const { register } = useAuth()
     const { toast } = useToast()
     const router = useRouter()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+        setLoading(true)
+        setError("")
+
+        // Basic validation
+        if (!name || !email || !password || !confirmPassword) {
+            setError("Semua field harus diisi")
+            setLoading(false)
+            return
+        }
+
+        if (!email.includes("@")) {
+            setError("Format email tidak valid")
+            setLoading(false)
+            return
+        }
 
         if (password !== confirmPassword) {
-            toast({
-                title: "Password Tidak Cocok",
-                description: "Password dan konfirmasi password harus sama",
-                variant: "destructive",
-            })
+            setError("Password dan konfirmasi password harus sama")
+            setLoading(false)
             return
         }
 
         if (password.length < 6) {
-            toast({
-                title: "Password Terlalu Pendek",
-                description: "Password minimal 6 karakter",
-                variant: "destructive",
-            })
+            setError("Password minimal 6 karakter")
+            setLoading(false)
             return
         }
 
-        setLoading(true)
+        if (name.length < 2) {
+            setError("Nama minimal 2 karakter")
+            setLoading(false)
+            return
+        }
 
         const result = await register(name, email, password)
 
@@ -55,6 +70,7 @@ export default function RegisterForm() {
             })
             router.push("/dashboard")
         } else {
+            setError(result.error)
             toast({
                 title: "Registrasi Gagal",
                 description: result.error,
@@ -72,11 +88,17 @@ export default function RegisterForm() {
                     <div className="flex justify-center mb-4">
                         <Leaf className="h-12 w-12 text-green-500" />
                     </div>
-                    <CardTitle className="text-2xl font-bold text-green-700 dark:text-green-400">Daftar Oishi Life</CardTitle>
+                    <CardTitle className="text-2xl font-bold text-green-700 dark:text-green-400">Daftar HealthyNippon</CardTitle>
                     <CardDescription>Buat akun baru untuk mulai menganalisis makanan sehat</CardDescription>
                 </CardHeader>
                 <form onSubmit={handleSubmit}>
                     <CardContent className="space-y-4">
+                        {error && (
+                            <Alert variant="destructive">
+                                <AlertDescription>{error}</AlertDescription>
+                            </Alert>
+                        )}
+
                         <div className="space-y-2">
                             <Label htmlFor="name">Nama Lengkap</Label>
                             <Input
@@ -85,6 +107,7 @@ export default function RegisterForm() {
                                 placeholder="Masukkan nama lengkap"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
+                                disabled={loading}
                                 required
                             />
                         </div>
@@ -96,6 +119,7 @@ export default function RegisterForm() {
                                 placeholder="contoh@email.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                                disabled={loading}
                                 required
                             />
                         </div>
@@ -108,6 +132,7 @@ export default function RegisterForm() {
                                     placeholder="Minimal 6 karakter"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
+                                    disabled={loading}
                                     required
                                 />
                                 <Button
@@ -116,6 +141,7 @@ export default function RegisterForm() {
                                     size="sm"
                                     className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                                     onClick={() => setShowPassword(!showPassword)}
+                                    disabled={loading}
                                 >
                                     {showPassword ? (
                                         <EyeOff className="h-4 w-4 text-muted-foreground" />
@@ -134,6 +160,7 @@ export default function RegisterForm() {
                                     placeholder="Ulangi password"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
+                                    disabled={loading}
                                     required
                                 />
                                 <Button
@@ -142,6 +169,7 @@ export default function RegisterForm() {
                                     size="sm"
                                     className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    disabled={loading}
                                 >
                                     {showConfirmPassword ? (
                                         <EyeOff className="h-4 w-4 text-muted-foreground" />
@@ -158,7 +186,14 @@ export default function RegisterForm() {
                             className="w-full bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
                             disabled={loading}
                         >
-                            {loading ? "Memproses..." : "Daftar"}
+                            {loading ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Memproses...
+                                </>
+                            ) : (
+                                "Daftar"
+                            )}
                         </Button>
                         <p className="text-sm text-center text-muted-foreground">
                             Sudah punya akun?{" "}

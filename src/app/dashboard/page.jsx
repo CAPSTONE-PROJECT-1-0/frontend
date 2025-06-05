@@ -1,15 +1,16 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
-import { Camera, Upload, RefreshCw, Check, X, Info, Salad } from "lucide-react"
+import { Camera, Upload, RefreshCw, Check, X, Info, Salad, AlertCircle, Video } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/contexts/auth-context"
 import ProtectedRoute from "@/components/auth/protected-route"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export default function Dashboard() {
   return (
@@ -27,8 +28,19 @@ function DashboardContent() {
   const [analyzed, setAnalyzed] = useState(false)
   const [cameraStream, setCameraStream] = useState(null)
   const [showCamera, setShowCamera] = useState(false)
+  const [cameraError, setCameraError] = useState(null)
+  const [cameraLoading, setCameraLoading] = useState(false)
   const videoRef = useRef(null)
   const canvasRef = useRef(null)
+
+  // Cleanup camera stream when component unmounts
+  useEffect(() => {
+    return () => {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach((track) => track.stop())
+      }
+    }
+  }, [cameraStream])
 
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0]
@@ -37,33 +49,81 @@ function DashboardContent() {
       reader.onload = (event) => {
         setSelectedImage(event.target?.result)
         setAnalyzed(false)
+        toast({
+          title: "Gambar Berhasil Diunggah",
+          description: "Gambar makanan berhasil diunggah dari galeri.",
+        })
       }
       reader.readAsDataURL(file)
     }
   }
 
   const startCamera = async () => {
+    setCameraLoading(true)
+    setCameraError(null)
+
     try {
+      // Check if getUserMedia is supported
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("Kamera tidak didukung di browser ini")
+      }
+
+      // Request camera permission
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
+          width: { ideal: 1280, max: 1920 },
+          height: { ideal: 720, max: 1080 },
           facingMode: "environment", // Use back camera on mobile
         },
+        audio: false,
       })
+
       setCameraStream(stream)
       setShowCamera(true)
 
+      // Wait for video element to be ready
       if (videoRef.current) {
         videoRef.current.srcObject = stream
+
+        // Wait for video to load
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current.play().catch((error) => {
+            console.error("Error playing video:", error)
+            toast({
+              title: "Error Video",
+              description: "Tidak dapat memutar video kamera.",
+              variant: "destructive",
+            })
+          })
+        }
       }
+
+      toast({
+        title: "Kamera Berhasil Diakses",
+        description: "Kamera siap digunakan untuk mengambil foto makanan.",
+      })
     } catch (error) {
       console.error("Error accessing camera:", error)
+      let errorMessage = "Tidak dapat mengakses kamera."
+
+      if (error.name === "NotAllowedError") {
+        errorMessage = "Akses kamera ditolak. Silakan berikan izin akses kamera di pengaturan browser."
+      } else if (error.name === "NotFoundError") {
+        errorMessage = "Kamera tidak ditemukan di perangkat ini."
+      } else if (error.name === "NotSupportedError") {
+        errorMessage = "Kamera tidak didukung di browser ini."
+      } else if (error.name === "NotReadableError") {
+        errorMessage = "Kamera sedang digunakan oleh aplikasi lain."
+      }
+
+      setCameraError(errorMessage)
       toast({
         title: "Error Kamera",
-        description: "Tidak dapat mengakses kamera. Pastikan Anda memberikan izin akses kamera.",
+        description: errorMessage,
         variant: "destructive",
       })
+    } finally {
+      setCameraLoading(false)
     }
   }
 
@@ -73,6 +133,11 @@ function DashboardContent() {
       setCameraStream(null)
     }
     setShowCamera(false)
+    setCameraError(null)
+
+    if (videoRef.current) {
+      videoRef.current.srcObject = null
+    }
   }
 
   const capturePhoto = () => {
@@ -81,12 +146,15 @@ function DashboardContent() {
       const video = videoRef.current
       const context = canvas.getContext("2d")
 
+      // Set canvas dimensions to match video
       canvas.width = video.videoWidth
       canvas.height = video.videoHeight
 
+      // Draw the video frame to canvas
       context.drawImage(video, 0, 0, canvas.width, canvas.height)
 
-      const imageDataUrl = canvas.toDataURL("image/jpeg")
+      // Convert canvas to data URL
+      const imageDataUrl = canvas.toDataURL("image/jpeg", 0.8)
       setSelectedImage(imageDataUrl)
       setAnalyzed(false)
       stopCamera()
@@ -94,6 +162,12 @@ function DashboardContent() {
       toast({
         title: "Foto Berhasil Diambil",
         description: "Foto makanan berhasil diambil dari kamera.",
+      })
+    } else {
+      toast({
+        title: "Error Mengambil Foto",
+        description: "Tidak dapat mengambil foto. Pastikan kamera berfungsi dengan baik.",
+        variant: "destructive",
       })
     }
   }
@@ -130,6 +204,11 @@ function DashboardContent() {
     setTimeout(() => {
       setAnalyzing(false)
       setAnalyzed(true)
+
+      toast({
+        title: "Analisis Selesai",
+        description: "Makanan berhasil dianalisis. Lihat hasil dan rekomendasi di sebelah kanan.",
+      })
 
       // TODO: Save analysis to backend
       // saveAnalysisToBackend({
@@ -182,6 +261,7 @@ function DashboardContent() {
                   <TabsTrigger value="upload">Unggah Gambar</TabsTrigger>
                   <TabsTrigger value="camera">Kamera</TabsTrigger>
                 </TabsList>
+
                 <TabsContent value="upload" className="space-y-4">
                   <div className="flex justify-center">
                     <div className="relative w-full max-w-md h-64 border-2 border-dashed border-green-200 dark:border-green-800 rounded-lg flex flex-col items-center justify-center overflow-hidden">
@@ -209,34 +289,71 @@ function DashboardContent() {
                     </div>
                   </div>
                 </TabsContent>
+
                 <TabsContent value="camera" className="space-y-4">
                   <div className="flex justify-center">
                     {showCamera ? (
                       <div className="relative w-full max-w-md">
-                        <video
-                          ref={videoRef}
-                          autoPlay
-                          playsInline
-                          className="w-full h-64 object-cover rounded-lg border-2 border-green-200 dark:border-green-800"
-                        />
-                        <canvas ref={canvasRef} className="hidden" />
+                        <div className="relative h-64 w-full rounded-lg overflow-hidden border-2 border-green-200 dark:border-green-800">
+                          <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
+                          <canvas ref={canvasRef} className="hidden" />
+
+                          {/* Camera overlay */}
+                          <div className="absolute inset-0 pointer-events-none">
+                            <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
+                              <div className="bg-black/50 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
+                                <Video className="h-3 w-3" />
+                                Live
+                              </div>
+                            </div>
+
+                            {/* Center focus indicator */}
+                            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                              <div className="w-16 h-16 border-2 border-white rounded-lg opacity-50"></div>
+                            </div>
+                          </div>
+                        </div>
+
                         <div className="flex gap-2 mt-4 justify-center">
-                          <Button onClick={capturePhoto} className="bg-green-600 hover:bg-green-700">
+                          <Button onClick={capturePhoto} className="bg-green-600 hover:bg-green-700" size="lg">
                             <Camera className="mr-2 h-4 w-4" />
                             Ambil Foto
                           </Button>
-                          <Button onClick={stopCamera} variant="outline">
+                          <Button onClick={stopCamera} variant="outline" size="lg">
                             Batal
                           </Button>
                         </div>
                       </div>
                     ) : (
-                      <div
-                        className="relative w-full max-w-md h-64 border-2 border-dashed border-green-200 dark:border-green-800 rounded-lg flex flex-col items-center justify-center cursor-pointer"
-                        onClick={startCamera}
-                      >
-                        <Camera className="h-10 w-10 text-green-500 mb-2" />
-                        <p className="text-sm text-muted-foreground text-center px-4">Klik untuk mengakses kamera</p>
+                      <div className="w-full max-w-md space-y-4">
+                        {cameraError && (
+                          <Alert variant="destructive">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertDescription>{cameraError}</AlertDescription>
+                          </Alert>
+                        )}
+
+                        <div
+                          className="relative w-full h-64 border-2 border-dashed border-green-200 dark:border-green-800 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-green-300 dark:hover:border-green-700 transition-colors"
+                          onClick={startCamera}
+                        >
+                          {cameraLoading ? (
+                            <>
+                              <RefreshCw className="h-10 w-10 text-green-500 mb-2 animate-spin" />
+                              <p className="text-sm text-muted-foreground text-center px-4">Mengakses kamera...</p>
+                            </>
+                          ) : (
+                            <>
+                              <Camera className="h-10 w-10 text-green-500 mb-2" />
+                              <p className="text-sm text-muted-foreground text-center px-4">
+                                Klik untuk mengakses kamera
+                              </p>
+                              <p className="text-xs text-muted-foreground text-center px-4 mt-1">
+                                Pastikan browser memiliki izin akses kamera
+                              </p>
+                            </>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -248,6 +365,7 @@ function DashboardContent() {
                   onClick={analyzeFood}
                   disabled={!selectedImage || analyzing}
                   className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
+                  size="lg"
                 >
                   {analyzing ? (
                     <>
