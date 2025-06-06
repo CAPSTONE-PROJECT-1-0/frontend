@@ -79,6 +79,7 @@ function DashboardContent() {
 
       const video = videoRef.current
       const handleLoadedMetadata = () => {
+        console.log("Video metadata loaded", video.videoWidth, video.videoHeight)
         video.play().catch((error) => {
           console.error("Error playing video:", error)
           toast({
@@ -139,6 +140,15 @@ function DashboardContent() {
   }
 
   const capturePhoto = () => {
+    if (!videoRef.current || videoRef.current.readyState < 2) {
+      toast({
+        title: "Kamera belum siap",
+        description: "Tunggu beberapa saat hingga kamera siap, lalu coba lagi.",
+        variant: "destructive",
+      })
+      return
+    }
+
     if (videoRef.current && canvasRef.current) {
       const canvas = canvasRef.current
       const video = videoRef.current
@@ -291,7 +301,7 @@ function DashboardContent() {
                       <div className="relative w-full max-w-md">
                         <div className="relative h-64 w-full rounded-lg overflow-hidden border-2 border-green-200 dark:border-green-800">
                           <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
-                          <canvas ref={canvasRef} className="hidden" />
+                          <canvas ref={canvasRef} className="block" />
 
                           {/* Camera overlay */}
                           <div className="absolute inset-0 pointer-events-none">
@@ -311,7 +321,7 @@ function DashboardContent() {
 
                         <div className="flex gap-2 mt-4 justify-center">
                           <Button onClick={capturePhoto} className="bg-green-600 hover:bg-green-700" size="lg">
-                            {/* <Camera className="mr-2 h-4 w-4" /> */}
+                            <Camera className="mr-2 h-4 w-4" />
                             Ambil Foto
                           </Button>
                           <Button onClick={stopCamera} variant="outline" size="lg">
