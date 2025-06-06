@@ -80,6 +80,17 @@ function DashboardContent() {
       const video = videoRef.current
       const handleLoadedMetadata = () => {
         console.log("Video metadata loaded", video.videoWidth, video.videoHeight)
+
+        if (video) {
+          video.srcObject = stream
+          video.onloadedmetadata = handleLoadedMetadata
+        }
+
+        toast({
+          title: "Kamera Berhasil Diakses",
+          description: "Kamera siap digunakan untuk mengambil foto makanan.",
+        })
+
         video.play().catch((error) => {
           console.error("Error playing video:", error)
           toast({
@@ -90,15 +101,6 @@ function DashboardContent() {
         })
       }
 
-      if (video) {
-        video.srcObject = stream
-        video.onloadedmetadata = handleLoadedMetadata
-      }
-
-      toast({
-        title: "Kamera Berhasil Diakses",
-        description: "Kamera siap digunakan untuk mengambil foto makanan.",
-      })
     } catch (error) {
       console.error("Error accessing camera:", error)
       let errorMessage = "Tidak dapat mengakses kamera."
@@ -300,7 +302,7 @@ function DashboardContent() {
                     {showCamera ? (
                       <div className="relative w-full max-w-md">
                         <div className="relative h-64 w-full rounded-lg overflow-hidden border-2 border-green-200 dark:border-green-800">
-                          <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
+                          <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover" />
                           <canvas ref={canvasRef} className="block" />
 
                           {/* Camera overlay */}
