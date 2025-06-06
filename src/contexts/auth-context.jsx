@@ -67,22 +67,22 @@ export function AuthProvider({ children }) {
         }
       }
 
-      const token = result.data.token
+      const token = result.data.token || result.token
       if (!token) {
         throw new Error("Token tidak ditemukan dalam respons server");
       }
 
       // Extract user data and token
       const userData = {
-        id: result.data?.id || result.id,
-        email: result.data?.email || result.email,
-        name: result.data?.name || result.name || email.split("@")[0],
+        id: result.user?.id || result.id,
+        email: result.user?.email || result.email,
+        name: result.user?.name || result.name || email.split("@")[0],
         token: token,
       }
 
       // Save user data and token to state and localStorage
       setUser(userData)
-      if (response.ok && data.token) {
+      if (response.ok && result.data.token) {
         localStorage.setItem("user", JSON.stringify(userData))
         localStorage.setItem("token", token)
       }
