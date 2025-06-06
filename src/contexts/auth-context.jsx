@@ -67,19 +67,24 @@ export function AuthProvider({ children }) {
         }
       }
 
+      const token = data.token || data.access_token || data.data?.token;
+      if (!token) {
+        throw new Error("Token tidak ditemukan dalam respons server");
+      }
+
       // Extract user data and token
       const userData = {
         id: data.user?.id || data.id,
         email: data.user?.email || data.email,
         name: data.user?.name || data.name || email.split("@")[0],
-        token: data.token,
+        token: token,
       }
 
       // Save user data and token to state and localStorage
       setUser(userData)
       if (response.ok && data.token) {
         localStorage.setItem("user", JSON.stringify(userData))
-        localStorage.setItem("token", data.token)
+        localStorage.setItem("token", token)
       }
 
 
