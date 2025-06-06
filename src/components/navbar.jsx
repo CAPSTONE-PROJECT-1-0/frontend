@@ -47,7 +47,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
             <Leaf className="h-6 w-6 text-green-500" />
-            <span className="text-xl font-bold text-green-600 dark:text-green-400">HealthyNippon</span>
+            <span className="text-xl font-bold text-green-600 dark:text-green-400">Oishi Life</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -56,9 +56,8 @@ export default function Navbar() {
               <Link
                 key={item.path}
                 href={item.path}
-                className={`text-sm font-medium transition-colors hover:text-green-600 dark:hover:text-green-400 ${
-                  pathname === item.path ? "text-green-600 dark:text-green-400" : "text-muted-foreground"
-                }`}
+                className={`text-sm font-medium transition-colors hover:text-green-600 dark:hover:text-green-400 ${pathname === item.path ? "text-green-600 dark:text-green-400" : "text-muted-foreground"
+                  }`}
               >
                 {item.name}
               </Link>
@@ -129,7 +128,7 @@ export default function Navbar() {
               <div className="flex items-center justify-between p-4 border-b">
                 <div className="flex items-center gap-2">
                   <Leaf className="h-5 w-5 text-green-500" />
-                  <span className="font-semibold text-green-600 dark:text-green-400">HealthyNippon</span>
+                  <span className="font-semibold text-green-600 dark:text-green-400">Oishi Life</span>
                 </div>
                 <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>
                   <X className="h-4 w-4" />
@@ -144,11 +143,10 @@ export default function Navbar() {
                       key={item.path}
                       href={item.path}
                       onClick={handleNavClick}
-                      className={`text-sm font-medium transition-colors hover:text-green-600 dark:hover:text-green-400 p-3 rounded-md hover:bg-green-50 dark:hover:bg-green-900/20 ${
-                        pathname === item.path
-                          ? "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20"
-                          : "text-muted-foreground"
-                      }`}
+                      className={`text-sm font-medium transition-colors hover:text-green-600 dark:hover:text-green-400 p-3 rounded-md hover:bg-green-50 dark:hover:bg-green-900/20 ${pathname === item.path
+                        ? "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20"
+                        : "text-muted-foreground"
+                        }`}
                     >
                       {item.name}
                     </Link>

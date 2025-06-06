@@ -78,7 +78,7 @@ export default function PWAInstallPrompt() {
                                 <Smartphone className="h-5 w-5 text-green-600 dark:text-green-400" />
                             </div>
                             <div>
-                                <CardTitle className="text-lg">Install HealthyNippon</CardTitle>
+                                <CardTitle className="text-lg">Install Oishi Life</CardTitle>
                                 <CardDescription className="text-sm">
                                     Install aplikasi untuk akses yang lebih cepat dan mudah
                                 </CardDescription>

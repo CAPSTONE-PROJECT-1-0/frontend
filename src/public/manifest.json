@@ -1,6 +1,6 @@
 {
-    "name": "HealthyNippon - Rekomendasi Makanan Sehat",
-    "short_name": "HealthyNippon",
+    "name": "Oishi Life - Rekomendasi Makanan Sehat",
+    "short_name": "Oishi Life",
     "description": "Aplikasi rekomendasi makanan sehat dengan analisis gizi menggunakan AI dan tema Jepang",
     "start_url": "/",
     "display": "standalone",
