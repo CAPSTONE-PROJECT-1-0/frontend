@@ -30,17 +30,15 @@ function DashboardContent() {
   const [showCamera, setShowCamera] = useState(false)
   const [cameraError, setCameraError] = useState(null)
   const [cameraLoading, setCameraLoading] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const videoRef = useRef(null)
   const canvasRef = useRef(null)
 
-  // Cleanup camera stream when component unmounts
   useEffect(() => {
-    return () => {
-      if (cameraStream) {
-        cameraStream.getTracks().forEach((track) => track.stop())
-      }
-    }
-  }, [cameraStream])
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return null
 
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0]
@@ -63,17 +61,15 @@ function DashboardContent() {
     setCameraError(null)
 
     try {
-      // Check if getUserMedia is supported
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         throw new Error("Kamera tidak didukung di browser ini")
       }
 
-      // Request camera permission
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           width: { ideal: 1280, max: 1920 },
           height: { ideal: 720, max: 1080 },
-          facingMode: "environment", // Use back camera on mobile
+          facingMode: "environment",
         },
         audio: false,
       })
@@ -81,11 +77,9 @@ function DashboardContent() {
       setCameraStream(stream)
       setShowCamera(true)
 
-      // Wait for video element to be ready
       if (videoRef.current) {
         videoRef.current.srcObject = stream
 
-        // Wait for video to load
         videoRef.current.onloadedmetadata = () => {
           videoRef.current.play().catch((error) => {
             console.error("Error playing video:", error)
@@ -146,14 +140,11 @@ function DashboardContent() {
       const video = videoRef.current
       const context = canvas.getContext("2d")
 
-      // Set canvas dimensions to match video
       canvas.width = video.videoWidth
       canvas.height = video.videoHeight
 
-      // Draw the video frame to canvas
       context.drawImage(video, 0, 0, canvas.width, canvas.height)
 
-      // Convert canvas to data URL
       const imageDataUrl = canvas.toDataURL("image/jpeg", 0.8)
       setSelectedImage(imageDataUrl)
       setAnalyzed(false)
@@ -316,7 +307,7 @@ function DashboardContent() {
 
                         <div className="flex gap-2 mt-4 justify-center">
                           <Button onClick={capturePhoto} className="bg-green-600 hover:bg-green-700" size="lg">
-                            <Camera className="mr-2 h-4 w-4" />
+                            {/* <Camera className="mr-2 h-4 w-4" /> */}
                             Ambil Foto
                           </Button>
                           <Button onClick={stopCamera} variant="outline" size="lg">
