@@ -88,7 +88,7 @@ export default function RegisterForm() {
                     <div className="flex justify-center mb-4">
                         <Leaf className="h-12 w-12 text-green-500" />
                     </div>
-                    <CardTitle className="text-2xl font-bold text-green-700 dark:text-green-400">Daftar HealthyNippon</CardTitle>
+                    <CardTitle className="text-2xl font-bold text-green-700 dark:text-green-400">Daftar Oishi Life</CardTitle>
                     <CardDescription>Buat akun baru untuk mulai menganalisis makanan sehat</CardDescription>
                 </CardHeader>
                 <form onSubmit={handleSubmit}>

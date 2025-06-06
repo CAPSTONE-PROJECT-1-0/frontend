@@ -68,7 +68,7 @@ export default function LoginForm() {
                         <Leaf className="h-12 w-12 text-green-500" />
                     </div>
                     <CardTitle className="text-2xl font-bold text-green-700 dark:text-green-400">
-                        Masuk ke HealthyNippon
+                        Masuk ke Oishi Life
                     </CardTitle>
                     <CardDescription>Masukkan email dan password Anda untuk mengakses dashboard</CardDescription>
                 </CardHeader>
