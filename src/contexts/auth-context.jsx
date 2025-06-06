@@ -127,14 +127,12 @@ export function AuthProvider({ children }) {
         id: data.user?.id || data.id,
         email: data.user?.email || data.email || email,
         name: data.user?.name || data.name || name,
-        password: data.user?.password || data.password || password,
-        token: data.user?.token || data.token,
       }
 
       // Save user data and token to state and localStorage
       setUser(userData)
-      localStorage.setItem("user", JSON.stringify(userData))      // Save token to localStorage
-      localStorage.setItem("token", JSON.stringify(userData))      // Save token to localStorage
+      localStorage.setItem("user", JSON.stringify(userData))
+      localStorage.setItem("token", data.user.token)
 
 
       if (data.token) {
