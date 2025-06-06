@@ -77,19 +77,21 @@ function DashboardContent() {
       setCameraStream(stream)
       setShowCamera(true)
 
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-
-        videoRef.current.onloadedmetadata = () => {
-          videoRef.current.play().catch((error) => {
-            console.error("Error playing video:", error)
-            toast({
-              title: "Error Video",
-              description: "Tidak dapat memutar video kamera.",
-              variant: "destructive",
-            })
+      const video = videoRef.current
+      const handleLoadedMetadata = () => {
+        video.play().catch((error) => {
+          console.error("Error playing video:", error)
+          toast({
+            title: "Error Video",
+            description: "Tidak dapat memutar video kamera.",
+            variant: "destructive",
           })
-        }
+        })
+      }
+
+      if (video) {
+        video.srcObject = stream
+        video.onloadedmetadata = handleLoadedMetadata
       }
 
       toast({
@@ -130,7 +132,9 @@ function DashboardContent() {
     setCameraError(null)
 
     if (videoRef.current) {
+      videoRef.current.pause()
       videoRef.current.srcObject = null
+      videoRef.current.onloadedmetadata = null
     }
   }
 
@@ -286,7 +290,7 @@ function DashboardContent() {
                     {showCamera ? (
                       <div className="relative w-full max-w-md">
                         <div className="relative h-64 w-full rounded-lg overflow-hidden border-2 border-green-200 dark:border-green-800">
-                          <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
+                          <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
                           <canvas ref={canvasRef} className="hidden" />
 
                           {/* Camera overlay */}
