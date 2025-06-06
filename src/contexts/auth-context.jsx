@@ -51,7 +51,7 @@ export function AuthProvider({ children }) {
         body: JSON.stringify({ email, password }),
       })
 
-      const data = await response.json()
+      const result = await response.json()
 
 
       if (!response.ok) {
@@ -59,15 +59,15 @@ export function AuthProvider({ children }) {
         if (response.status === 401) {
           throw new Error("Email atau password salah")
         } else if (response.status === 400) {
-          throw new Error(data.message || "Data yang dikirim tidak valid")
+          throw new Error(result.message || "Data yang dikirim tidak valid")
         } else if (response.status >= 500) {
           throw new Error("Server sedang bermasalah, silakan coba lagi nanti")
         } else {
-          throw new Error(data.message || "Login gagal")
+          throw new Error(result.message || "Login gagal")
         }
       }
 
-      const token = data.token || data.access_token || data.data?.token;
+      const token = result.data.token
       if (!token) {
         throw new Error("Token tidak ditemukan dalam respons server");
       }
