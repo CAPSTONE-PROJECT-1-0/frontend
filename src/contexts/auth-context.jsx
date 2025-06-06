@@ -52,9 +52,9 @@ export function AuthProvider({ children }) {
       })
 
       const data = await response.json()
-      if (response.ok && data?.token) {
-        localStorage.setItem("user", data.data.name)
-        localStorage.setItem("token", data.data.token)
+      if (response.ok && data.token) {
+        localStorage.setItem("user", data.name)
+        localStorage.setItem("token", data.token)
       }
 
       if (!response.ok) {
