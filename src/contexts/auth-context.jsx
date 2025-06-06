@@ -71,16 +71,17 @@ export function AuthProvider({ children }) {
         id: data.user?.id || data.id,
         email: data.user?.email || data.email,
         name: data.user?.name || data.name || email.split("@")[0],
+        token: data.token,
       }
 
       // Save user data and token to state and localStorage
       setUser(userData)
       localStorage.setItem("user", JSON.stringify(userData))
+      localStorage.setItem("token", JSON.stringify(userData))
 
       // Save token to localStorage
-      if (response.ok && data.token) {
-        localStorage.setItem("token", data.token)
-      }
+      // if (response.ok && data.token) {
+      // }
 
       return { success: true, user: userData }
     } catch (error) {
