@@ -147,7 +147,7 @@ function DashboardContent() {
 
       toast({
         title: "Foto Berhasil",
-        description: "Foto makanan berhasil diambil.",
+        description: "Foto makanan berhasil diambil. Anda dapat menganalisis atau mengambil ulang foto.",
       })
     } catch (error) {
       console.error("Capture error:", error)
@@ -270,6 +270,23 @@ function DashboardContent() {
                           </Button>
                           <Button onClick={stopCamera} variant="outline" size="lg">
                             Batal
+                          </Button>
+                        </div>
+                      </div>
+                    ) : selectedImage && !showCamera ? (
+                      <div className="relative w-full max-w-md">
+                        <div className="relative h-64 w-full rounded-lg overflow-hidden border-2 border-green-200 dark:border-green-800">
+                          <Image
+                            src={selectedImage || "/placeholder.svg"}
+                            alt="Captured food"
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="flex gap-2 mt-4 justify-center">
+                          <Button onClick={() => startCamera()} className="bg-green-600 hover:bg-green-700" size="lg">
+                            <Camera className="mr-2 h-4 w-4" />
+                            Ambil Ulang
                           </Button>
                         </div>
                       </div>

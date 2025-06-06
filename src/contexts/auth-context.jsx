@@ -78,7 +78,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem("user", JSON.stringify(userData))
 
       // Save token to localStorage
-      if (data.token) {
+      if (response.ok && data.token) {
         localStorage.setItem("token", data.token)
       }
 

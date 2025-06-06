@@ -9,7 +9,6 @@ export default function ProtectedRoute({ children }) {
     const router = useRouter()
 
     useEffect(() => {
-        // Only redirect if not loading and not authenticated
         if (!loading && !isAuthenticated) {
             router.push("/login")
         }
@@ -26,7 +25,6 @@ export default function ProtectedRoute({ children }) {
         )
     }
 
-    // Only render children if authenticated
     if (!isAuthenticated) {
         return null
     }
