@@ -39,7 +39,7 @@ function DashboardContent() {
         streamRef.current.getTracks().forEach((track) => track.stop())
       }
     }
-  }, [])
+  }, [showCamera])
 
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0]
@@ -66,11 +66,21 @@ function DashboardContent() {
         streamRef.current.getTracks().forEach((track) => track.stop())
       }
 
+      const constraints = {
+        video: {
+          facingMode: "environment", // Prioritize rear camera
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
+        audio: false
+      }
+
       // Simple camera request with minimal constraints
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: false,
-      })
+      const stream = await navigator.mediaDevices.getUserMedia(constraints)
+        .catch(err => {
+          console.warn("Advanced constraints failed, using basic", err)
+          return navigator.mediaDevices.getUserMedia({ video: true })
+        })
 
       // Save stream reference for cleanup
       streamRef.current = stream
