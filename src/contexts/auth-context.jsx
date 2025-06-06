@@ -72,12 +72,13 @@ export function AuthProvider({ children }) {
         id: data.user?.id || data.id,
         email: data.user?.email || data.email,
         name: data.user?.name || data.name || email.split("@")[0],
+        token: data.token,
       }
 
       // Save user data and token to state and localStorage
       setUser(userData)
       if (response.ok && data.token) {
-        localStorage.setItem("user", data.name)
+        localStorage.setItem("user", JSON.stringify(userData))
         localStorage.setItem("token", data.token)
       }
 
@@ -127,18 +128,16 @@ export function AuthProvider({ children }) {
         id: data.user?.id || data.id,
         email: data.user?.email || data.email || email,
         name: data.user?.name || data.name || name,
-        token: data.user?.token || data.token,
+        password: data.user?.password || data.password || password,
       }
 
       // Save user data and token to state and localStorage
       setUser(userData)
 
-      if (response.ok && data.token) {
-        localStorage.setItem("user", JSON.stringify(userData))
-        localStorage.setItem("token", data.token)
-      }
-      console.log({ data: localStorage.setItem("user", JSON.stringify(userData)) })
-      console.log({ data_token: localStorage.setItem("token", userData.token) })
+      // if (response.ok && data.token) {
+      //   localStorage.setItem("user", JSON.stringify(userData))
+      //   localStorage.setItem("token", data.token)
+      // }
 
 
       // if (data.token) {
