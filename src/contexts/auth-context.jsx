@@ -132,12 +132,12 @@ export function AuthProvider({ children }) {
       // Save user data and token to state and localStorage
       setUser(userData)
       localStorage.setItem("user", JSON.stringify(userData))
-      localStorage.setItem("token", data.user.token)
+      localStorage.setItem("token", data.token)
 
 
-      if (data.token) {
-        localStorage.setItem("token", data.token)
-      }
+      // if (data.token) {
+      //   localStorage.setItem("token", data.token)
+      // }
 
       return { success: true, user: userData }
     } catch (error) {
