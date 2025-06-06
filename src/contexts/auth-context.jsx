@@ -18,21 +18,26 @@ export function AuthProvider({ children }) {
 
   const API_BASE_URL = "https://backend-mf-rohman6511-wmk9cpp4.leapcell.dev"
 
+  // Check for existing token on mount
   useEffect(() => {
-    // Check if user is logged in from localStorage
-    const savedUser = localStorage.getItem("user")
-    const savedToken = localStorage.getItem("token")
+    const checkAuth = () => {
+      const token = localStorage.getItem("token")
+      const savedUser = localStorage.getItem("user")
 
-    if (savedUser && savedToken) {
-      try {
-        setUser(JSON.parse(savedUser))
-      } catch (error) {
-        console.error("Error parsing saved user:", error)
-        localStorage.removeItem("user")
-        localStorage.removeItem("token")
+      if (token && savedUser) {
+        try {
+          setUser(JSON.parse(savedUser))
+        } catch (error) {
+          console.error("Error parsing saved user:", error)
+          localStorage.removeItem("user")
+          localStorage.removeItem("token")
+        }
       }
+
+      setLoading(false)
     }
-    setLoading(false)
+
+    checkAuth()
   }, [])
 
   const login = async (email, password) => {
@@ -61,17 +66,18 @@ export function AuthProvider({ children }) {
         }
       }
 
-      // Assuming the API returns user data and token
+      // Extract user data and token
       const userData = {
         id: data.user?.id || data.id,
         email: data.user?.email || data.email,
         name: data.user?.name || data.name || email.split("@")[0],
       }
 
+      // Save user data and token to state and localStorage
       setUser(userData)
-
-      // Save user data and token to localStorage
       localStorage.setItem("user", JSON.stringify(userData))
+
+      // Save token to localStorage
       if (data.token) {
         localStorage.setItem("token", data.token)
       }
@@ -112,17 +118,18 @@ export function AuthProvider({ children }) {
         }
       }
 
-      // Assuming the API returns user data and token
+      // Extract user data and token
       const userData = {
         id: data.user?.id || data.id,
         email: data.user?.email || data.email || email,
         name: data.user?.name || data.name || name,
       }
 
+      // Save user data and token to state and localStorage
       setUser(userData)
-
-      // Save user data and token to localStorage
       localStorage.setItem("user", JSON.stringify(userData))
+
+      // Save token to localStorage
       if (data.token) {
         localStorage.setItem("token", data.token)
       }
@@ -138,7 +145,10 @@ export function AuthProvider({ children }) {
   }
 
   const logout = () => {
+    // Clear user from state
     setUser(null)
+
+    // Remove user data and token from localStorage
     localStorage.removeItem("user")
     localStorage.removeItem("token")
   }
