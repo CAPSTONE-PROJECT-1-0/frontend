@@ -1,16 +1,16 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
-import { Camera, Upload, RefreshCw, Check, X, Info, Salad, AlertCircle } from "lucide-react"
+import { Camera, Upload, RefreshCw, Check, X, Info, Salad } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/contexts/auth-context"
 import ProtectedRoute from "@/components/auth/protected-route"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import CameraStream from "@/components/camera-stream"
 
 export default function Dashboard() {
   return (
@@ -27,19 +27,6 @@ function DashboardContent() {
   const [analyzing, setAnalyzing] = useState(false)
   const [analyzed, setAnalyzed] = useState(false)
   const [showCamera, setShowCamera] = useState(false)
-  const [cameraError, setCameraError] = useState(null)
-  const videoRef = useRef(null)
-  const canvasRef = useRef(null)
-  const streamRef = useRef(null)
-
-  // Clean up camera on unmount
-  useEffect(() => {
-    return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop())
-      }
-    }
-  }, [showCamera])
 
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0]
@@ -57,116 +44,30 @@ function DashboardContent() {
     }
   }
 
-  const startCamera = async () => {
-    setCameraError(null)
-
-    try {
-      // Stop any existing stream
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop())
-      }
-
-      const constraints = {
-        video: {
-          facingMode: "environment", // Prioritize rear camera
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        },
-        audio: false
-      }
-
-      // Simple camera request with minimal constraints
-      const stream = await navigator.mediaDevices.getUserMedia(constraints)
-        .catch(err => {
-          console.warn("Advanced constraints failed, using basic", err)
-          return navigator.mediaDevices.getUserMedia({ video: true })
-        })
-
-      // Save stream reference for cleanup
-      streamRef.current = stream
-
-      // Set video source
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-      }
-
-      setShowCamera(true)
-
-      toast({
-        title: "Kamera Aktif",
-        description: "Kamera siap digunakan untuk mengambil foto makanan.",
-      })
-    } catch (error) {
-      console.error("Camera error:", error)
-
-      let errorMessage = "Tidak dapat mengakses kamera."
-      if (error.name === "NotAllowedError") {
-        errorMessage = "Akses kamera ditolak. Silakan berikan izin akses kamera di pengaturan browser."
-      }
-
-      setCameraError(errorMessage)
-      toast({
-        title: "Error Kamera",
-        description: errorMessage,
-        variant: "destructive",
-      })
-    }
+  const handleCameraCapture = (imageData) => {
+    setSelectedImage(imageData)
+    setShowCamera(false)
+    setAnalyzed(false)
+    toast({
+      title: "Foto Berhasil Diambil",
+      description: "Foto makanan berhasil diambil dari kamera.",
+    })
   }
 
-  const stopCamera = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop())
-      streamRef.current = null
-    }
+  const handleCameraError = (errorMessage) => {
+    toast({
+      title: "Error Kamera",
+      description: errorMessage,
+      variant: "destructive",
+    })
+  }
 
-    if (videoRef.current) {
-      videoRef.current.srcObject = null
-    }
-
+  const handleCameraClose = () => {
     setShowCamera(false)
   }
 
-  const capturePhoto = () => {
-    if (!videoRef.current || !canvasRef.current) {
-      toast({
-        title: "Error",
-        description: "Kamera tidak tersedia.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    try {
-      const video = videoRef.current
-      const canvas = canvasRef.current
-      const context = canvas.getContext("2d")
-
-      // Set canvas size to video size
-      canvas.width = video.videoWidth || 640
-      canvas.height = video.videoHeight || 480
-
-      // Draw video to canvas
-      context.drawImage(video, 0, 0, canvas.width, canvas.height)
-
-      // Get image data
-      const imageData = canvas.toDataURL("image/jpeg")
-      setSelectedImage(imageData)
-
-      // Stop camera
-      stopCamera()
-
-      toast({
-        title: "Foto Berhasil",
-        description: "Foto makanan berhasil diambil. Anda dapat menganalisis atau mengambil ulang foto.",
-      })
-    } catch (error) {
-      console.error("Capture error:", error)
-      toast({
-        title: "Error",
-        description: "Gagal mengambil foto. Silakan coba lagi.",
-        variant: "destructive",
-      })
-    }
+  const startCamera = () => {
+    setShowCamera(true)
   }
 
   const analyzeFood = async () => {
@@ -267,23 +168,12 @@ function DashboardContent() {
                 <TabsContent value="camera" className="space-y-4">
                   <div className="flex justify-center">
                     {showCamera ? (
-                      <div className="relative w-full max-w-md">
-                        <div className="relative h-64 w-full rounded-lg overflow-hidden border-2 border-green-200 dark:border-green-800 bg-black">
-                          <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
-                          <canvas ref={canvasRef} className="hidden" />
-                        </div>
-
-                        <div className="flex gap-2 mt-4 justify-center">
-                          <Button onClick={capturePhoto} className="bg-green-600 hover:bg-green-700" size="lg">
-                            <Camera className="mr-2 h-4 w-4" />
-                            Ambil Foto
-                          </Button>
-                          <Button onClick={stopCamera} variant="outline" size="lg">
-                            Batal
-                          </Button>
-                        </div>
-                      </div>
-                    ) : selectedImage && !showCamera ? (
+                      <CameraStream
+                        onCapture={handleCameraCapture}
+                        onClose={handleCameraClose}
+                        onError={handleCameraError}
+                      />
+                    ) : selectedImage ? (
                       <div className="relative w-full max-w-md">
                         <div className="relative h-64 w-full rounded-lg overflow-hidden border-2 border-green-200 dark:border-green-800">
                           <Image
@@ -294,7 +184,7 @@ function DashboardContent() {
                           />
                         </div>
                         <div className="flex gap-2 mt-4 justify-center">
-                          <Button onClick={() => startCamera()} className="bg-green-600 hover:bg-green-700" size="lg">
+                          <Button onClick={startCamera} className="bg-green-600 hover:bg-green-700" size="lg">
                             <Camera className="mr-2 h-4 w-4" />
                             Ambil Ulang
                           </Button>
@@ -302,13 +192,6 @@ function DashboardContent() {
                       </div>
                     ) : (
                       <div className="w-full max-w-md space-y-4">
-                        {cameraError && (
-                          <Alert variant="destructive">
-                            <AlertCircle className="h-4 w-4" />
-                            <AlertDescription>{cameraError}</AlertDescription>
-                          </Alert>
-                        )}
-
                         <div
                           className="relative w-full h-64 border-2 border-dashed border-green-200 dark:border-green-800 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-green-300 dark:hover:border-green-700 transition-colors"
                           onClick={startCamera}
