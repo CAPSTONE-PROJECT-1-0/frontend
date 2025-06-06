@@ -52,6 +52,10 @@ export function AuthProvider({ children }) {
       })
 
       const data = await response.json()
+      if (response.ok && data?.token) {
+        localStorage.setItem("user", data.data.name)
+        localStorage.setItem("token", data.data.token)
+      }
 
       if (!response.ok) {
         // Handle different error status codes
@@ -75,8 +79,8 @@ export function AuthProvider({ children }) {
 
       // Save user data and token to state and localStorage
       setUser(userData)
-      localStorage.setItem("user", JSON.stringify(userData))
-      localStorage.setItem("token", data.token)
+
+
 
       // Save token to localStorage
       // if (response.ok && data.token) {
