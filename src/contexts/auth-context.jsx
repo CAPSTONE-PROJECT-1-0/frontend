@@ -74,9 +74,9 @@ export function AuthProvider({ children }) {
 
       // Extract user data and token
       const userData = {
-        id: data.user?.id || data.id,
-        email: data.user?.email || data.email,
-        name: data.user?.name || data.name || email.split("@")[0],
+        id: result.data?.id || result.id,
+        email: result.data?.email || result.email,
+        name: result.data?.name || result.name || email.split("@")[0],
         token: token,
       }
 
