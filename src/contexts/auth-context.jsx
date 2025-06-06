@@ -52,10 +52,7 @@ export function AuthProvider({ children }) {
       })
 
       const data = await response.json()
-      if (response.ok && data.token) {
-        localStorage.setItem("user", data.name)
-        localStorage.setItem("token", data.token)
-      }
+
 
       if (!response.ok) {
         // Handle different error status codes
@@ -79,7 +76,10 @@ export function AuthProvider({ children }) {
 
       // Save user data and token to state and localStorage
       setUser(userData)
-
+      if (response.ok && data.token) {
+        localStorage.setItem("user", data.name)
+        localStorage.setItem("token", data.token)
+      }
 
 
       // Save token to localStorage
@@ -127,13 +127,16 @@ export function AuthProvider({ children }) {
         id: data.user?.id || data.id,
         email: data.user?.email || data.email || email,
         name: data.user?.name || data.name || name,
+        password: data.user?.password || data.password || password,
+        token: data.user?.token || data.token,
       }
 
       // Save user data and token to state and localStorage
       setUser(userData)
-      localStorage.setItem("user", JSON.stringify(userData))
+      localStorage.setItem("user", JSON.stringify(userData))      // Save token to localStorage
+      localStorage.setItem("token", JSON.stringify(userData))      // Save token to localStorage
 
-      // Save token to localStorage
+
       if (data.token) {
         localStorage.setItem("token", data.token)
       }
