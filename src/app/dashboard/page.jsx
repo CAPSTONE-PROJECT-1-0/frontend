@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -30,15 +30,55 @@ function DashboardContent() {
   const [showCamera, setShowCamera] = useState(false)
   const [cameraError, setCameraError] = useState(null)
   const [cameraLoading, setCameraLoading] = useState(false)
-  const [mounted, setMounted] = useState(false)
+  const [videoReady, setVideoReady] = useState(false)
   const videoRef = useRef(null)
   const canvasRef = useRef(null)
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  // Cleanup camera stream when component unmounts or when camera is stopped
+  const cleanupCamera = useCallback(() => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach((track) => {
+        track.stop()
+        console.log("Camera track stopped:", track.kind)
+      })
+      setCameraStream(null)
+    }
 
-  if (!mounted) return null
+    if (videoRef.current) {
+      videoRef.current.pause()
+      videoRef.current.srcObject = null
+      videoRef.current.removeEventListener("loadedmetadata", handleVideoReady)
+      videoRef.current.removeEventListener("canplay", handleVideoReady)
+    }
+
+    setVideoReady(false)
+    setShowCamera(false)
+    setCameraError(null)
+  }, [cameraStream])
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      cleanupCamera()
+    }
+  }, [cleanupCamera])
+
+  const handleVideoReady = useCallback(() => {
+    console.log("Video ready to play")
+    setVideoReady(true)
+    setCameraLoading(false)
+
+    if (videoRef.current) {
+      videoRef.current.play().catch((error) => {
+        console.error("Error playing video:", error)
+        toast({
+          title: "Error Video",
+          description: "Tidak dapat memutar video kamera.",
+          variant: "destructive",
+        })
+      })
+    }
+  }, [toast])
 
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0]
@@ -59,48 +99,66 @@ function DashboardContent() {
   const startCamera = async () => {
     setCameraLoading(true)
     setCameraError(null)
+    setVideoReady(false)
 
     try {
+      // Check browser support
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         throw new Error("Kamera tidak didukung di browser ini")
       }
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: { ideal: 1280, max: 1920 },
-          height: { ideal: 720, max: 1080 },
-          facingMode: "environment",
-        },
-        audio: false,
-      })
+      // Stop any existing stream first
+      if (cameraStream) {
+        cameraStream.getTracks().forEach((track) => track.stop())
+      }
 
+      console.log("Requesting camera access...")
+
+      // Request camera access with fallback constraints
+      let stream
+      try {
+        // Try with ideal constraints first
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            width: { ideal: 1280, max: 1920 },
+            height: { ideal: 720, max: 1080 },
+            facingMode: "environment",
+          },
+          audio: false,
+        })
+      } catch (error) {
+        console.log("Fallback to basic constraints:", error)
+        // Fallback to basic constraints
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: "environment",
+          },
+          audio: false,
+        })
+      }
+
+      console.log("Camera stream obtained:", stream)
       setCameraStream(stream)
       setShowCamera(true)
 
-      const video = videoRef.current
-      const handleLoadedMetadata = () => {
-        console.log("Video metadata loaded", video.videoWidth, video.videoHeight)
+      // Setup video element
+      if (videoRef.current) {
+        const video = videoRef.current
 
-        if (video) {
-          video.srcObject = stream
-          video.onloadedmetadata = handleLoadedMetadata
-        }
+        // Add event listeners
+        video.addEventListener("loadedmetadata", handleVideoReady)
+        video.addEventListener("canplay", handleVideoReady)
+
+        // Set the stream
+        video.srcObject = stream
+
+        console.log("Video element setup complete")
 
         toast({
           title: "Kamera Berhasil Diakses",
           description: "Kamera siap digunakan untuk mengambil foto makanan.",
         })
-
-        video.play().catch((error) => {
-          console.error("Error playing video:", error)
-          toast({
-            title: "Error Video",
-            description: "Tidak dapat memutar video kamera.",
-            variant: "destructive",
-          })
-        })
       }
-
     } catch (error) {
       console.error("Error accessing camera:", error)
       let errorMessage = "Tidak dapat mengakses kamera."
@@ -113,36 +171,31 @@ function DashboardContent() {
         errorMessage = "Kamera tidak didukung di browser ini."
       } else if (error.name === "NotReadableError") {
         errorMessage = "Kamera sedang digunakan oleh aplikasi lain."
+      } else if (error.name === "OverconstrainedError") {
+        errorMessage = "Pengaturan kamera tidak didukung. Mencoba dengan pengaturan dasar."
       }
 
       setCameraError(errorMessage)
+      setCameraLoading(false)
       toast({
         title: "Error Kamera",
         description: errorMessage,
         variant: "destructive",
       })
-    } finally {
-      setCameraLoading(false)
     }
   }
 
   const stopCamera = () => {
-    if (cameraStream) {
-      cameraStream.getTracks().forEach((track) => track.stop())
-      setCameraStream(null)
-    }
-    setShowCamera(false)
-    setCameraError(null)
-
-    if (videoRef.current) {
-      videoRef.current.pause()
-      videoRef.current.srcObject = null
-      videoRef.current.onloadedmetadata = null
-    }
+    console.log("Stopping camera...")
+    cleanupCamera()
+    toast({
+      title: "Kamera Dihentikan",
+      description: "Kamera telah dihentikan.",
+    })
   }
 
   const capturePhoto = () => {
-    if (!videoRef.current || videoRef.current.readyState < 2) {
+    if (!videoRef.current || !videoReady) {
       toast({
         title: "Kamera belum siap",
         description: "Tunggu beberapa saat hingga kamera siap, lalu coba lagi.",
@@ -151,26 +204,43 @@ function DashboardContent() {
       return
     }
 
-    if (videoRef.current && canvasRef.current) {
+    if (!canvasRef.current) {
+      toast({
+        title: "Error Canvas",
+        description: "Canvas tidak tersedia untuk mengambil foto.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    try {
       const canvas = canvasRef.current
       const video = videoRef.current
       const context = canvas.getContext("2d")
 
-      canvas.width = video.videoWidth
-      canvas.height = video.videoHeight
+      // Set canvas dimensions to match video
+      canvas.width = video.videoWidth || video.clientWidth
+      canvas.height = video.videoHeight || video.clientHeight
 
+      console.log("Capturing photo:", canvas.width, "x", canvas.height)
+
+      // Draw the video frame to canvas
       context.drawImage(video, 0, 0, canvas.width, canvas.height)
 
+      // Convert canvas to data URL
       const imageDataUrl = canvas.toDataURL("image/jpeg", 0.8)
       setSelectedImage(imageDataUrl)
       setAnalyzed(false)
+
+      // Stop camera after capture
       stopCamera()
 
       toast({
         title: "Foto Berhasil Diambil",
         description: "Foto makanan berhasil diambil dari kamera.",
       })
-    } else {
+    } catch (error) {
+      console.error("Error capturing photo:", error)
       toast({
         title: "Error Mengambil Foto",
         description: "Tidak dapat mengambil foto. Pastikan kamera berfungsi dengan baik.",
@@ -301,17 +371,29 @@ function DashboardContent() {
                   <div className="flex justify-center">
                     {showCamera ? (
                       <div className="relative w-full max-w-md">
-                        <div className="relative h-64 w-full rounded-lg overflow-hidden border-2 border-green-200 dark:border-green-800">
-                          <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover" />
-                          <canvas ref={canvasRef} className="block" />
+                        <div className="relative h-64 w-full rounded-lg overflow-hidden border-2 border-green-200 dark:border-green-800 bg-black">
+                          <video
+                            ref={videoRef}
+                            autoPlay
+                            muted
+                            playsInline
+                            className="w-full h-full object-cover"
+                            style={{ transform: "scaleX(-1)" }} // Mirror effect for better UX
+                          />
+
+                          {/* Hidden canvas for photo capture */}
+                          <canvas ref={canvasRef} className="hidden" />
 
                           {/* Camera overlay */}
                           <div className="absolute inset-0 pointer-events-none">
                             <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
                               <div className="bg-black/50 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
                                 <Video className="h-3 w-3" />
-                                Live
+                                {videoReady ? "Live" : "Loading..."}
                               </div>
+                              {videoReady && (
+                                <div className="bg-green-500/80 text-white px-2 py-1 rounded text-xs">Ready</div>
+                              )}
                             </div>
 
                             {/* Center focus indicator */}
@@ -319,12 +401,27 @@ function DashboardContent() {
                               <div className="w-16 h-16 border-2 border-white rounded-lg opacity-50"></div>
                             </div>
                           </div>
+
+                          {/* Loading overlay */}
+                          {cameraLoading && (
+                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                              <div className="text-white text-center">
+                                <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-2" />
+                                <p className="text-sm">Memuat kamera...</p>
+                              </div>
+                            </div>
+                          )}
                         </div>
 
                         <div className="flex gap-2 mt-4 justify-center">
-                          <Button onClick={capturePhoto} className="bg-green-600 hover:bg-green-700" size="lg">
+                          <Button
+                            onClick={capturePhoto}
+                            disabled={!videoReady || cameraLoading}
+                            className="bg-green-600 hover:bg-green-700"
+                            size="lg"
+                          >
                             <Camera className="mr-2 h-4 w-4" />
-                            Ambil Foto
+                            {videoReady ? "Ambil Foto" : "Tunggu..."}
                           </Button>
                           <Button onClick={stopCamera} variant="outline" size="lg">
                             Batal
