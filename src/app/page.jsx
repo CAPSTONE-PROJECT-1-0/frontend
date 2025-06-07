@@ -18,7 +18,7 @@ export default function Home() {
           <div className="container relative z-10 flex flex-col items-center justify-center gap-4 text-center h-full min-h-[500px]">
             <div className="animate-fade-in">
               <h1 className="text-3xl font-bold tracking-tighter text-white sm:text-5xl md:text-6xl drop-shadow-lg">
-                Rekomendasi Makanan Sehat <span className="text-green-400">Gaya Jepang</span>
+                Current Healthy <span className="text-green-400">Food Recommendations</span>
               </h1>
               <p className="max-w-[700px] text-white md:text-xl mt-6 drop-shadow-md">
                 Analisis keseimbangan gizi makanan Anda dan dapatkan rekomendasi makanan sehat dengan bahan yang sama.
