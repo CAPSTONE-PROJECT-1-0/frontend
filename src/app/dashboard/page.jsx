@@ -379,13 +379,13 @@ function DashboardContent() {
                         {predictionResult.nutrition_status.replace("_", " ")}
                       </div>
                     </div>
-                    {/* <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-muted-foreground">
                       <strong>Kalori:</strong> {predictionResult.nutrition.kalori} kkal
-                    </div> */}
+                    </div>
                   </div>
 
                   <div className="space-y-4">
-                    <div className="space-y-2">
+                    {/* <div className="space-y-2">
                       <div className="flex justify-between items-center">
                         <span className="text-sm font-medium">Protein</span>
                         <span className="text-sm text-muted-foreground">
@@ -393,7 +393,7 @@ function DashboardContent() {
                         </span>
                       </div>
                       <Progress value={nutritionValues.calories} className="h-2 bg-green-100 dark:bg-green-900/50" />
-                    </div>
+                    </div> */}
 
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
