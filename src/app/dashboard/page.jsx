@@ -118,17 +118,23 @@ function DashboardContent() {
       const formData = new FormData()
       formData.append("file", imageBlob, "food_image.jpg")
 
-      // Kirim ke API
-      const response = await fetch("https://backendml-production-23c3.up.railway.app/predict", {
+      // Kirim ke API route Next.js (bukan langsung ke ML API)
+      const response = await fetch("/api/predict", {
         method: "POST",
         body: formData,
       })
 
       if (!response.ok) {
-        throw new Error(`Error: ${response.status} ${response.statusText}`)
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.details || `Error: ${response.status} ${response.statusText}`)
       }
 
       const data = await response.json()
+
+      // Cek jika ada error dari API
+      if (data.error) {
+        throw new Error(data.details || data.error)
+      }
 
       // Ambil prediksi dengan confidence tertinggi (yang pertama)
       if (data.top_predictions && data.top_predictions.length > 0) {
@@ -145,9 +151,20 @@ function DashboardContent() {
     } catch (error) {
       console.error("Error analyzing food:", error)
       setPredictionError(error.message)
+
+      let errorMessage = "Terjadi kesalahan saat menganalisis gambar."
+
+      if (error.message.includes("Failed to fetch")) {
+        errorMessage = "Koneksi ke server gagal. Periksa koneksi internet Anda."
+      } else if (error.message.includes("500")) {
+        errorMessage = "Server sedang bermasalah. Silakan coba lagi nanti."
+      } else if (error.message.includes("timeout")) {
+        errorMessage = "Analisis memakan waktu terlalu lama. Silakan coba lagi."
+      }
+
       toast({
         title: "Gagal Menganalisis",
-        description: "Terjadi kesalahan saat menganalisis gambar. Silakan coba lagi.",
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {
@@ -176,6 +193,11 @@ function DashboardContent() {
       miso_soup: { protein: 65, carbs: 40, fat: 25, fiber: 70 },
       spring_rolls: { protein: 40, carbs: 75, fat: 60, fiber: 30 },
       macaroni_and_cheese: { protein: 50, carbs: 80, fat: 75, fiber: 20 },
+      ramen: { protein: 45, carbs: 85, fat: 70, fiber: 25 },
+      sushi: { protein: 80, carbs: 60, fat: 30, fiber: 40 },
+      tempura: { protein: 35, carbs: 65, fat: 85, fiber: 15 },
+      yakitori: { protein: 90, carbs: 20, fat: 55, fiber: 10 },
+      onigiri: { protein: 40, carbs: 75, fat: 15, fiber: 35 },
       // Default values jika tidak ada yang cocok
       default: { protein: 50, carbs: 50, fat: 50, fiber: 50 },
     }
