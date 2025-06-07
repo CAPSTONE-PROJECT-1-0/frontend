@@ -379,7 +379,7 @@ function DashboardContent() {
                         {predictionResult.nutrition_status.replace("_", " ")}
                       </div>
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-muted-foreground ml-1">
                       <strong>Kalori:</strong> {predictionResult.nutrition.kalori} kkal
                     </div>
                   </div>
