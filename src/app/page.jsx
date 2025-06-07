@@ -131,7 +131,7 @@ export default function Home() {
             </p>
           </div>
           <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
-            <div className="flex flex-col items-center text-center gap-2 hover-lift">
+            <div className="flex flex-col items-center text-center gap-2 hover-lift rounded-2xl">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/50">
                 <Camera className="h-8 w-8 text-green-600 dark:text-green-400" />
               </div>
