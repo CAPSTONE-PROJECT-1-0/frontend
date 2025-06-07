@@ -6,12 +6,22 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
-import { Camera, Upload, RefreshCw, Check, X, Info, Salad, AlertCircle } from "lucide-react"
+import { Camera, Upload, RefreshCw, Check, X, Info, Salad, AlertCircle, Clock, ChefHat, Eye } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/contexts/auth-context"
 import ProtectedRoute from "@/components/auth/protected-route"
 import CameraStream from "@/components/camera-stream"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Badge } from "@/components/ui/badge"
+import recommendedFoodsData from "@/data/recommended-foods.json"
 
 export default function Dashboard() {
   return (
@@ -30,6 +40,7 @@ function DashboardContent() {
   const [showCamera, setShowCamera] = useState(false)
   const [predictionResult, setPredictionResult] = useState(null)
   const [predictionError, setPredictionError] = useState(null)
+  const [recommendedFoods, setRecommendedFoods] = useState([])
 
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0]
@@ -75,6 +86,12 @@ function DashboardContent() {
 
   const startCamera = () => {
     setShowCamera(true)
+  }
+
+  // Fungsi untuk mengambil 3 menu random dari data
+  const getRandomRecommendations = () => {
+    const shuffled = [...recommendedFoodsData].sort(() => 0.5 - Math.random())
+    return shuffled.slice(0, 3)
   }
 
   // Fungsi untuk mengkonversi base64 ke blob
@@ -145,6 +162,10 @@ function DashboardContent() {
         setPredictionResult(bestPrediction)
         setAnalyzed(true)
 
+        // Generate random recommendations setiap kali analisis selesai
+        const randomRecommendations = getRandomRecommendations()
+        setRecommendedFoods(randomRecommendations)
+
         toast({
           title: "Analisis Selesai",
           description: `Makanan terdeteksi: ${formatFoodLabel(bestPrediction.label)} (${confidenceToPercent(bestPrediction.confidence)}% yakin)`,
@@ -204,28 +225,6 @@ function DashboardContent() {
       calories: nutrition.kalori,
     }
   }
-
-  const recommendedFoods = [
-    {
-      name: "Salmon Teriyaki",
-      image: "/placeholder.svg?height=200&width=300",
-      nutrition: { protein: 85, carbs: 60, fat: 40 },
-      description: "Salmon panggang dengan saus teriyaki rendah gula, disajikan dengan brokoli kukus dan nasi merah.",
-    },
-    {
-      name: "Tofu Salad",
-      image: "/placeholder.svg?height=200&width=300",
-      nutrition: { protein: 70, carbs: 75, fat: 30 },
-      description: "Salad tofu dengan sayuran segar, edamame, dan dressing yuzu rendah kalori.",
-    },
-    {
-      name: "Chicken Katsu Sehat",
-      image: "/placeholder.svg?height=200&width=300",
-      nutrition: { protein: 90, carbs: 65, fat: 35 },
-      description:
-        "Ayam panggang dengan lapisan panko yang dipanggang, bukan digoreng, dengan saus katsu rendah sodium.",
-    },
-  ]
 
   // Dapatkan nilai nutrisi berdasarkan prediksi
   const nutritionValues = predictionResult ? calculateNutritionPercentage(predictionResult.nutrition) : null
@@ -388,13 +387,14 @@ function DashboardContent() {
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium">Kalori</span>
+                        <span className="text-sm font-medium">Protein</span>
                         <span className="text-sm text-muted-foreground">
-                          {predictionResult.nutrition.kalori}kkal ({nutritionValues.kalori}%)
+                          {predictionResult.nutrition.kalori}g ({nutritionValues.calories}%)
                         </span>
                       </div>
-                      <Progress value={nutritionValues.kalori} className="h-2 bg-green-100 dark:bg-green-900/50" />
+                      <Progress value={nutritionValues.calories} className="h-2 bg-green-100 dark:bg-green-900/50" />
                     </div>
+
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
                         <span className="text-sm font-medium">Protein</span>
@@ -452,44 +452,130 @@ function DashboardContent() {
         </div>
       </div>
 
-      {analyzed && (
+      {analyzed && recommendedFoods.length > 0 && (
         <div className="mt-8">
           <h2 className="text-2xl font-bold mb-4 text-green-700 dark:text-green-400">Rekomendasi Makanan Sehat</h2>
+          <p className="text-muted-foreground mb-6">
+            Berikut adalah rekomendasi makanan sehat yang dipilih secara acak untuk Anda
+          </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {recommendedFoods.map((food, index) => (
-              <Card key={index}>
+            {recommendedFoods.map((food) => (
+              <Card key={food.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="relative h-40 w-full">
-                  <Image
-                    src={food.image || "/placeholder.svg"}
-                    alt={food.name}
-                    fill
-                    className="object-cover rounded-t-lg"
-                  />
+                  <Image src={food.image || "/placeholder.svg"} alt={food.name} fill className="object-cover" />
+                  <div className="absolute top-2 right-2 bg-white dark:bg-gray-800 px-2 py-1 rounded-full">
+                    <span className="text-xs font-medium">{food.calories} kkal</span>
+                  </div>
                 </div>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg">{food.name}</CardTitle>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Clock className="h-4 w-4" />
+                    <span>{food.cookTime}</span>
+                    <ChefHat className="h-4 w-4 ml-2" />
+                    <span>{food.difficulty}</span>
+                  </div>
                 </CardHeader>
                 <CardContent className="pb-2">
-                  <p className="text-sm text-muted-foreground">{food.description}</p>
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    <div className="bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded text-xs">
+                  <p className="text-sm text-muted-foreground mb-3">{food.description}</p>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="secondary" className="text-xs">
                       Protein: {food.nutrition.protein}%
-                    </div>
-                    <div className="bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded text-xs">
+                    </Badge>
+                    <Badge variant="secondary" className="text-xs">
                       Karbo: {food.nutrition.carbs}%
-                    </div>
-                    <div className="bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded text-xs">
+                    </Badge>
+                    <Badge variant="secondary" className="text-xs">
                       Lemak: {food.nutrition.fat}%
-                    </div>
+                    </Badge>
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button
-                    variant="outline"
-                    className="w-full border-green-200 dark:border-green-800 hover:bg-green-50 dark:hover:bg-green-900/50 hover:text-green-700 dark:hover:text-green-400"
-                  >
-                    Lihat Resep
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full border-green-200 dark:border-green-800 hover:bg-green-50 dark:hover:bg-green-900/50 hover:text-green-700 dark:hover:text-green-400"
+                      >
+                        <Eye className="mr-2 h-4 w-4" />
+                        Lihat Resep
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle className="text-xl text-green-700 dark:text-green-400">{food.name}</DialogTitle>
+                        <DialogDescription>{food.description}</DialogDescription>
+                      </DialogHeader>
+
+                      <div className="space-y-6">
+                        {/* Info Nutrisi */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                            <div className="text-lg font-bold text-green-600 dark:text-green-400">{food.calories}</div>
+                            <div className="text-xs text-muted-foreground">Kalori</div>
+                          </div>
+                          <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                            <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                              {food.nutrition.protein}%
+                            </div>
+                            <div className="text-xs text-muted-foreground">Protein</div>
+                          </div>
+                          <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                            <div className="text-lg font-bold text-orange-600 dark:text-orange-400">
+                              {food.nutrition.carbs}%
+                            </div>
+                            <div className="text-xs text-muted-foreground">Karbohidrat</div>
+                          </div>
+                          <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                            <div className="text-lg font-bold text-purple-600 dark:text-purple-400">
+                              {food.nutrition.fat}%
+                            </div>
+                            <div className="text-xs text-muted-foreground">Lemak</div>
+                          </div>
+                        </div>
+
+                        {/* Info Memasak */}
+                        <div className="flex gap-4">
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm">{food.cookTime}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <ChefHat className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm">{food.difficulty}</span>
+                          </div>
+                        </div>
+
+                        {/* Bahan-bahan */}
+                        <div>
+                          <h3 className="font-semibold mb-3 text-green-700 dark:text-green-400">Bahan-bahan:</h3>
+                          <ul className="space-y-1">
+                            {food.ingredients.map((ingredient, index) => (
+                              <li key={index} className="text-sm flex items-start gap-2">
+                                <span className="text-green-600 dark:text-green-400 mt-1">•</span>
+                                {ingredient}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        {/* Cara Memasak */}
+                        <div>
+                          <h3 className="font-semibold mb-3 text-green-700 dark:text-green-400">Cara Memasak:</h3>
+                          <ol className="space-y-2">
+                            {food.instructions.map((instruction, index) => (
+                              <li key={index} className="text-sm flex gap-3">
+                                <span className="bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-400 rounded-full w-6 h-6 flex items-center justify-center text-xs font-medium flex-shrink-0 mt-0.5">
+                                  {index + 1}
+                                </span>
+                                {instruction}
+                              </li>
+                            ))}
+                          </ol>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </CardFooter>
               </Card>
             ))}

@@ -1,0 +1,582 @@
+[
+    {
+        "id": 1,
+        "name": "Salmon Teriyaki",
+        "image": "/placeholder.svg?height=200&width=300&text=Salmon+Teriyaki",
+        "nutrition": {
+            "protein": 85,
+            "carbs": 60,
+            "fat": 40
+        },
+        "description": "Salmon panggang dengan saus teriyaki rendah gula, disajikan dengan brokoli kukus dan nasi merah.",
+        "calories": 320,
+        "cookTime": "25 menit",
+        "difficulty": "Mudah",
+        "ingredients": [
+            "200g fillet salmon",
+            "2 sdm saus teriyaki rendah gula",
+            "100g brokoli",
+            "80g nasi merah",
+            "1 sdt minyak zaitun",
+            "Garam dan merica secukupnya"
+        ],
+        "instructions": [
+            "Panaskan oven hingga 200°C",
+            "Lumuri salmon dengan saus teriyaki, diamkan 10 menit",
+            "Panggang salmon selama 15 menit",
+            "Kukus brokoli hingga empuk",
+            "Sajikan dengan nasi merah hangat"
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Tofu Salad Bowl",
+        "image": "/placeholder.svg?height=200&width=300&text=Tofu+Salad",
+        "nutrition": {
+            "protein": 70,
+            "carbs": 75,
+            "fat": 30
+        },
+        "description": "Salad tofu dengan sayuran segar, edamame, dan dressing yuzu rendah kalori.",
+        "calories": 280,
+        "cookTime": "15 menit",
+        "difficulty": "Sangat Mudah",
+        "ingredients": [
+            "150g tofu firm",
+            "100g edamame",
+            "50g selada hijau",
+            "50g wortel parut",
+            "2 sdm dressing yuzu",
+            "1 sdm wijen"
+        ],
+        "instructions": [
+            "Potong tofu kotak-kotak, panggang hingga kecokelatan",
+            "Rebus edamame hingga empuk",
+            "Campurkan semua sayuran dalam mangkuk",
+            "Tambahkan tofu dan edamame",
+            "Siram dengan dressing yuzu dan taburi wijen"
+        ]
+    },
+    {
+        "id": 3,
+        "name": "Chicken Katsu Sehat",
+        "image": "/placeholder.svg?height=200&width=300&text=Chicken+Katsu",
+        "nutrition": {
+            "protein": 90,
+            "carbs": 65,
+            "fat": 35
+        },
+        "description": "Ayam panggang dengan lapisan panko yang dipanggang, bukan digoreng, dengan saus katsu rendah sodium.",
+        "calories": 350,
+        "cookTime": "30 menit",
+        "difficulty": "Sedang",
+        "ingredients": [
+            "200g dada ayam",
+            "50g tepung panko",
+            "1 butir telur",
+            "2 sdm tepung terigu",
+            "3 sdm saus katsu rendah sodium",
+            "Spray minyak zaitun"
+        ],
+        "instructions": [
+            "Pipihkan dada ayam hingga tipis",
+            "Lumuri dengan tepung, telur, lalu panko",
+            "Semprot dengan minyak zaitun",
+            "Panggang 180°C selama 20 menit",
+            "Sajikan dengan saus katsu"
+        ]
+    },
+    {
+        "id": 4,
+        "name": "Miso Soup dengan Tahu",
+        "image": "/placeholder.svg?height=200&width=300&text=Miso+Soup",
+        "nutrition": {
+            "protein": 60,
+            "carbs": 40,
+            "fat": 25
+        },
+        "description": "Sup miso tradisional dengan tahu silken, rumput laut wakame, dan daun bawang.",
+        "calories": 120,
+        "cookTime": "10 menit",
+        "difficulty": "Sangat Mudah",
+        "ingredients": [
+            "2 sdm pasta miso",
+            "100g tahu silken",
+            "1 sdm rumput laut wakame kering",
+            "2 batang daun bawang",
+            "500ml air dashi",
+            "1 sdt mirin"
+        ],
+        "instructions": [
+            "Rendam wakame dalam air hangat",
+            "Didihkan air dashi",
+            "Larutkan miso dalam sedikit kaldu",
+            "Masukkan tahu dan wakame",
+            "Taburi daun bawang sebelum disajikan"
+        ]
+    },
+    {
+        "id": 5,
+        "name": "Quinoa Sushi Bowl",
+        "image": "/placeholder.svg?height=200&width=300&text=Quinoa+Sushi",
+        "nutrition": {
+            "protein": 75,
+            "carbs": 80,
+            "fat": 35
+        },
+        "description": "Bowl quinoa dengan topping ala sushi: alpukat, mentimun, dan ikan tuna segar.",
+        "calories": 380,
+        "cookTime": "20 menit",
+        "difficulty": "Sedang",
+        "ingredients": [
+            "100g quinoa",
+            "100g tuna sashimi grade",
+            "1/2 buah alpukat",
+            "50g mentimun",
+            "1 sdm nori parut",
+            "2 sdm saus ponzu"
+        ],
+        "instructions": [
+            "Masak quinoa hingga empuk",
+            "Potong tuna, alpukat, dan mentimun",
+            "Tata quinoa dalam mangkuk",
+            "Susun topping di atas quinoa",
+            "Siram dengan saus ponzu dan taburi nori"
+        ]
+    },
+    {
+        "id": 6,
+        "name": "Vegetable Tempura",
+        "image": "/placeholder.svg?height=200&width=300&text=Vegetable+Tempura",
+        "nutrition": {
+            "protein": 40,
+            "carbs": 70,
+            "fat": 45
+        },
+        "description": "Tempura sayuran ringan dengan adonan tipis, disajikan dengan saus tentsuyu.",
+        "calories": 250,
+        "cookTime": "25 menit",
+        "difficulty": "Sedang",
+        "ingredients": [
+            "100g brokoli",
+            "50g terong Jepang",
+            "50g paprika",
+            "100g tepung tempura",
+            "150ml air es",
+            "Minyak untuk menggoreng"
+        ],
+        "instructions": [
+            "Potong sayuran sesuai selera",
+            "Buat adonan tempura dengan air es",
+            "Celupkan sayuran ke adonan",
+            "Goreng dalam minyak panas hingga crispy",
+            "Tiriskan dan sajikan dengan saus tentsuyu"
+        ]
+    },
+    {
+        "id": 7,
+        "name": "Yakitori Ayam",
+        "image": "/placeholder.svg?height=200&width=300&text=Yakitori",
+        "nutrition": {
+            "protein": 95,
+            "carbs": 20,
+            "fat": 55
+        },
+        "description": "Sate ayam Jepang dengan bumbu tare manis gurih, dipanggang hingga karamel.",
+        "calories": 290,
+        "cookTime": "20 menit",
+        "difficulty": "Mudah",
+        "ingredients": [
+            "300g paha ayam tanpa kulit",
+            "3 sdm saus tare",
+            "1 sdm mirin",
+            "1 sdt gula aren",
+            "Tusuk sate",
+            "Daun bawang untuk garnish"
+        ],
+        "instructions": [
+            "Potong ayam kotak-kotak, tusuk dengan sate",
+            "Campurkan saus tare, mirin, dan gula",
+            "Panggang yakitori sambil diolesi saus",
+            "Balik beberapa kali hingga matang",
+            "Garnish dengan daun bawang"
+        ]
+    },
+    {
+        "id": 8,
+        "name": "Onigiri Tuna Mayo",
+        "image": "/placeholder.svg?height=200&width=300&text=Onigiri",
+        "nutrition": {
+            "protein": 65,
+            "carbs": 85,
+            "fat": 30
+        },
+        "description": "Nasi kepal Jepang dengan isian tuna mayo dan dibungkus nori.",
+        "calories": 220,
+        "cookTime": "15 menit",
+        "difficulty": "Mudah",
+        "ingredients": [
+            "200g nasi Jepang hangat",
+            "80g tuna kaleng",
+            "1 sdm mayones rendah lemak",
+            "2 lembar nori",
+            "1 sdt garam",
+            "1 sdt wijen"
+        ],
+        "instructions": [
+            "Campurkan tuna dengan mayones",
+            "Bentuk nasi menjadi segitiga dengan isian tuna",
+            "Bungkus dengan nori",
+            "Taburi wijen di atas",
+            "Sajikan segera"
+        ]
+    },
+    {
+        "id": 9,
+        "name": "Edamame Hummus",
+        "image": "/placeholder.svg?height=200&width=300&text=Edamame+Hummus",
+        "nutrition": {
+            "protein": 80,
+            "carbs": 45,
+            "fat": 40
+        },
+        "description": "Hummus dari edamame dengan rasa yang segar, disajikan dengan sayuran potong.",
+        "calories": 180,
+        "cookTime": "10 menit",
+        "difficulty": "Sangat Mudah",
+        "ingredients": [
+            "200g edamame kupas",
+            "2 sdm tahini",
+            "1 siung bawang putih",
+            "2 sdm air lemon",
+            "1 sdm minyak zaitun",
+            "Sayuran untuk celup"
+        ],
+        "instructions": [
+            "Rebus edamame hingga empuk",
+            "Blender semua bahan hingga halus",
+            "Tambahkan air jika terlalu kental",
+            "Sajikan dengan sayuran segar",
+            "Taburi minyak zaitun di atas"
+        ]
+    },
+    {
+        "id": 10,
+        "name": "Chirashi Bowl",
+        "image": "/placeholder.svg?height=200&width=300&text=Chirashi+Bowl",
+        "nutrition": {
+            "protein": 85,
+            "carbs": 70,
+            "fat": 45
+        },
+        "description": "Nasi sushi dengan berbagai topping sashimi segar dan sayuran.",
+        "calories": 420,
+        "cookTime": "25 menit",
+        "difficulty": "Sedang",
+        "ingredients": [
+            "150g nasi sushi",
+            "50g salmon sashimi",
+            "50g tuna sashimi",
+            "30g ikura",
+            "1/2 alpukat",
+            "Wasabi dan kecap asin"
+        ],
+        "instructions": [
+            "Siapkan nasi sushi dalam mangkuk",
+            "Potong sashimi sesuai selera",
+            "Tata sashimi dan alpukat di atas nasi",
+            "Tambahkan ikura sebagai garnish",
+            "Sajikan dengan wasabi dan kecap asin"
+        ]
+    },
+    {
+        "id": 11,
+        "name": "Agedashi Tofu",
+        "image": "/placeholder.svg?height=200&width=300&text=Agedashi+Tofu",
+        "nutrition": {
+            "protein": 70,
+            "carbs": 35,
+            "fat": 50
+        },
+        "description": "Tahu goreng ringan dalam kuah dashi hangat dengan parutan daikon.",
+        "calories": 200,
+        "cookTime": "20 menit",
+        "difficulty": "Sedang",
+        "ingredients": [
+            "200g tahu silken",
+            "3 sdm tepung kentang",
+            "300ml dashi",
+            "2 sdm kecap asin",
+            "1 sdm mirin",
+            "Daikon parut untuk garnish"
+        ],
+        "instructions": [
+            "Potong tahu, lumuri tepung kentang",
+            "Goreng tahu hingga kecokelatan",
+            "Panaskan dashi dengan kecap dan mirin",
+            "Letakkan tahu dalam mangkuk",
+            "Siram dengan kuah dan garnish daikon"
+        ]
+    },
+    {
+        "id": 12,
+        "name": "Gyoza Sayuran",
+        "image": "/placeholder.svg?height=200&width=300&text=Gyoza+Sayuran",
+        "nutrition": {
+            "protein": 45,
+            "carbs": 60,
+            "fat": 35
+        },
+        "description": "Dumpling Jepang dengan isian sayuran segar dan jamur shiitake.",
+        "calories": 240,
+        "cookTime": "30 menit",
+        "difficulty": "Sedang",
+        "ingredients": [
+            "20 lembar kulit gyoza",
+            "100g kol cincang",
+            "50g jamur shiitake",
+            "50g wortel parut",
+            "2 siung bawang putih",
+            "1 sdm minyak wijen"
+        ],
+        "instructions": [
+            "Tumis sayuran hingga layu",
+            "Bungkus isian dalam kulit gyoza",
+            "Panaskan wajan dengan sedikit minyak",
+            "Goreng gyoza hingga bawah kecokelatan",
+            "Tambahkan air, tutup hingga matang"
+        ]
+    },
+    {
+        "id": 13,
+        "name": "Zaru Soba",
+        "image": "/placeholder.svg?height=200&width=300&text=Zaru+Soba",
+        "nutrition": {
+            "protein": 55,
+            "carbs": 75,
+            "fat": 15
+        },
+        "description": "Mie soba dingin disajikan dengan saus tsuyu dan wasabi segar.",
+        "calories": 280,
+        "cookTime": "15 menit",
+        "difficulty": "Mudah",
+        "ingredients": [
+            "200g mie soba kering",
+            "100ml saus tsuyu",
+            "1 sdt wasabi",
+            "2 batang daun bawang",
+            "1 lembar nori",
+            "Es batu"
+        ],
+        "instructions": [
+            "Rebus mie soba sesuai petunjuk",
+            "Bilas dengan air dingin hingga dingin",
+            "Tata mie di atas saringan bambu",
+            "Sajikan dengan saus tsuyu dingin",
+            "Garnish dengan daun bawang dan nori"
+        ]
+    },
+    {
+        "id": 14,
+        "name": "Karaage Ayam",
+        "image": "/placeholder.svg?height=200&width=300&text=Karaage",
+        "nutrition": {
+            "protein": 85,
+            "carbs": 40,
+            "fat": 60
+        },
+        "description": "Ayam goreng Jepang yang renyah dengan bumbu jahe dan bawang putih.",
+        "calories": 320,
+        "cookTime": "25 menit",
+        "difficulty": "Sedang",
+        "ingredients": [
+            "300g paha ayam boneless",
+            "2 sdm kecap asin",
+            "1 sdm sake",
+            "1 sdt jahe parut",
+            "3 sdm tepung kentang",
+            "Minyak untuk menggoreng"
+        ],
+        "instructions": [
+            "Marinasi ayam dengan kecap, sake, dan jahe",
+            "Diamkan 30 menit",
+            "Lumuri dengan tepung kentang",
+            "Goreng dalam minyak panas hingga crispy",
+            "Tiriskan dan sajikan hangat"
+        ]
+    },
+    {
+        "id": 15,
+        "name": "Sunomono Salad",
+        "image": "/placeholder.svg?height=200&width=300&text=Sunomono",
+        "nutrition": {
+            "protein": 25,
+            "carbs": 30,
+            "fat": 10
+        },
+        "description": "Salad mentimun Jepang dengan dressing cuka yang menyegarkan.",
+        "calories": 80,
+        "cookTime": "10 menit",
+        "difficulty": "Sangat Mudah",
+        "ingredients": [
+            "2 buah mentimun",
+            "3 sdm cuka beras",
+            "1 sdm gula",
+            "1 sdt garam",
+            "1 sdm wijen putih",
+            "Rumput laut wakame"
+        ],
+        "instructions": [
+            "Iris mentimun tipis-tipis",
+            "Garam mentimun, diamkan 10 menit",
+            "Peras air dari mentimun",
+            "Campurkan dengan dressing cuka",
+            "Garnish dengan wijen dan wakame"
+        ]
+    },
+    {
+        "id": 16,
+        "name": "Bento Box Seimbang",
+        "image": "/placeholder.svg?height=200&width=300&text=Bento+Box",
+        "nutrition": {
+            "protein": 75,
+            "carbs": 65,
+            "fat": 40
+        },
+        "description": "Kotak bento dengan nasi, protein, dan sayuran dalam porsi seimbang.",
+        "calories": 380,
+        "cookTime": "35 menit",
+        "difficulty": "Sedang",
+        "ingredients": [
+            "100g nasi putih",
+            "80g ayam teriyaki",
+            "50g tamagoyaki",
+            "30g brokoli",
+            "20g wortel",
+            "10g acar lobak"
+        ],
+        "instructions": [
+            "Masak nasi hingga pulen",
+            "Buat ayam teriyaki dan tamagoyaki",
+            "Kukus sayuran hingga empuk",
+            "Tata semua dalam kotak bento",
+            "Tambahkan acar sebagai pelengkap"
+        ]
+    },
+    {
+        "id": 17,
+        "name": "Matcha Chia Pudding",
+        "image": "/placeholder.svg?height=200&width=300&text=Matcha+Pudding",
+        "nutrition": {
+            "protein": 60,
+            "carbs": 45,
+            "fat": 55
+        },
+        "description": "Pudding chia dengan rasa matcha yang kaya antioksidan.",
+        "calories": 220,
+        "cookTime": "5 menit + 4 jam",
+        "difficulty": "Sangat Mudah",
+        "ingredients": [
+            "3 sdm biji chia",
+            "250ml susu almond",
+            "1 sdt bubuk matcha",
+            "1 sdm madu",
+            "Buah beri untuk topping",
+            "Kacang almond cincang"
+        ],
+        "instructions": [
+            "Campurkan chia dengan susu almond",
+            "Aduk matcha dengan sedikit air panas",
+            "Campurkan semua bahan",
+            "Diamkan di kulkas 4 jam",
+            "Sajikan dengan topping buah dan kacang"
+        ]
+    },
+    {
+        "id": 18,
+        "name": "Nasu Dengaku",
+        "image": "/placeholder.svg?height=200&width=300&text=Nasu+Dengaku",
+        "nutrition": {
+            "protein": 35,
+            "carbs": 50,
+            "fat": 30
+        },
+        "description": "Terong panggang dengan glaze miso manis yang gurih.",
+        "calories": 160,
+        "cookTime": "20 menit",
+        "difficulty": "Mudah",
+        "ingredients": [
+            "2 buah terong Jepang",
+            "2 sdm pasta miso",
+            "1 sdm mirin",
+            "1 sdm gula",
+            "1 sdt minyak wijen",
+            "Wijen untuk garnish"
+        ],
+        "instructions": [
+            "Belah terong, buat sayatan silang",
+            "Panggang terong hingga empuk",
+            "Campurkan miso, mirin, dan gula",
+            "Olesi terong dengan campuran miso",
+            "Panggang lagi hingga karamel, taburi wijen"
+        ]
+    },
+    {
+        "id": 19,
+        "name": "Takoyaki Sehat",
+        "image": "/placeholder.svg?height=200&width=300&text=Takoyaki",
+        "nutrition": {
+            "protein": 70,
+            "carbs": 55,
+            "fat": 45
+        },
+        "description": "Bola takoyaki dengan isian gurita dan sayuran, versi yang lebih sehat.",
+        "calories": 280,
+        "cookTime": "25 menit",
+        "difficulty": "Sulit",
+        "ingredients": [
+            "100g tepung takoyaki",
+            "150ml dashi",
+            "1 butir telur",
+            "100g gurita rebus",
+            "Daun bawang cincang",
+            "Saus takoyaki"
+        ],
+        "instructions": [
+            "Buat adonan dari tepung, dashi, dan telur",
+            "Panaskan cetakan takoyaki",
+            "Tuang adonan, tambahkan isian",
+            "Putar-putar hingga bulat",
+            "Sajikan dengan saus dan mayones"
+        ]
+    },
+    {
+        "id": 20,
+        "name": "Shabu-Shabu Sayuran",
+        "image": "/placeholder.svg?height=200&width=300&text=Shabu+Shabu",
+        "nutrition": {
+            "protein": 50,
+            "carbs": 40,
+            "fat": 25
+        },
+        "description": "Hot pot Jepang dengan sayuran segar dan daging tipis dalam kaldu kombu.",
+        "calories": 200,
+        "cookTime": "20 menit",
+        "difficulty": "Mudah",
+        "ingredients": [
+            "100g daging sapi slice tipis",
+            "100g tahu",
+            "50g jamur enoki",
+            "50g sawi hijau",
+            "1L kaldu kombu",
+            "Saus ponzu untuk celup"
+        ],
+        "instructions": [
+            "Didihkan kaldu kombu",
+            "Siapkan semua bahan di piring",
+            "Celupkan daging sebentar dalam kaldu",
+            "Masak sayuran sesuai selera",
+            "Sajikan dengan saus ponzu"
+        ]
+    }
+]
