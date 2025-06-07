@@ -388,7 +388,7 @@ function DashboardContent() {
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium">Protein</span>
+                        <span className="text-sm font-medium">Kalori</span>
                         <span className="text-sm text-muted-foreground">
                           {predictionResult.nutrition.kalori}kkal ({nutritionValues.kalori}%)
                         </span>
