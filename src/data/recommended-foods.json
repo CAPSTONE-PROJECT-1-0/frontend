@@ -2,7 +2,7 @@
     {
         "id": 1,
         "name": "Salmon Teriyaki",
-        "image": "/placeholder.svg?height=200&width=300&text=Salmon+Teriyaki",
+        "image": "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/salmon-teriyaki.jfif",
         "nutrition": {
             "protein": 85,
             "carbs": 60,
@@ -31,7 +31,7 @@
     {
         "id": 2,
         "name": "Tofu Salad Bowl",
-        "image": "/placeholder.svg?height=200&width=300&text=Tofu+Salad",
+        "image": "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/Tofu-Salad-with-Honey-Yuzu-Dressing-1.jpg",
         "nutrition": {
             "protein": 70,
             "carbs": 75,
@@ -60,7 +60,7 @@
     {
         "id": 3,
         "name": "Chicken Katsu Sehat",
-        "image": "/placeholder.svg?height=200&width=300&text=Chicken+Katsu",
+        "image": "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/cicken-katsu.jpeg",
         "nutrition": {
             "protein": 90,
             "carbs": 65,
@@ -89,7 +89,7 @@
     {
         "id": 4,
         "name": "Miso Soup dengan Tahu",
-        "image": "/placeholder.svg?height=200&width=300&text=Miso+Soup",
+        "image": "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/miso soup.jfif",
         "nutrition": {
             "protein": 60,
             "carbs": 40,
@@ -118,7 +118,7 @@
     {
         "id": 5,
         "name": "Quinoa Sushi Bowl",
-        "image": "/placeholder.svg?height=200&width=300&text=Quinoa+Sushi",
+        "image": "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/sushi quisho.jfif",
         "nutrition": {
             "protein": 75,
             "carbs": 80,
@@ -147,7 +147,7 @@
     {
         "id": 6,
         "name": "Vegetable Tempura",
-        "image": "/placeholder.svg?height=200&width=300&text=Vegetable+Tempura",
+        "image": "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/vegetable tempura.jpg",
         "nutrition": {
             "protein": 40,
             "carbs": 70,
@@ -176,7 +176,7 @@
     {
         "id": 7,
         "name": "Yakitori Ayam",
-        "image": "/placeholder.svg?height=200&width=300&text=Yakitori",
+        "image": "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/yakitori.jpg",
         "nutrition": {
             "protein": 95,
             "carbs": 20,
@@ -205,7 +205,7 @@
     {
         "id": 8,
         "name": "Onigiri Tuna Mayo",
-        "image": "/placeholder.svg?height=200&width=300&text=Onigiri",
+        "image": "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/tuna-mayo.jpg",
         "nutrition": {
             "protein": 65,
             "carbs": 85,
@@ -234,7 +234,7 @@
     {
         "id": 9,
         "name": "Edamame Hummus",
-        "image": "/placeholder.svg?height=200&width=300&text=Edamame+Hummus",
+        "image": "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/Edamame-Avocado-Hummus.jpg",
         "nutrition": {
             "protein": 80,
             "carbs": 45,
@@ -263,7 +263,7 @@
     {
         "id": 10,
         "name": "Chirashi Bowl",
-        "image": "/placeholder.svg?height=200&width=300&text=Chirashi+Bowl",
+        "image": "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/Chirashi-Recipe-7.jpg",
         "nutrition": {
             "protein": 85,
             "carbs": 70,
@@ -292,7 +292,7 @@
     {
         "id": 11,
         "name": "Agedashi Tofu",
-        "image": "/placeholder.svg?height=200&width=300&text=Agedashi+Tofu",
+        "image": "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/Agedashi Tofu.jfif",
         "nutrition": {
             "protein": 70,
             "carbs": 35,
@@ -321,7 +321,7 @@
     {
         "id": 12,
         "name": "Gyoza Sayuran",
-        "image": "/placeholder.svg?height=200&width=300&text=Gyoza+Sayuran",
+        "image": "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/Gyoza Sayuran.jpg",
         "nutrition": {
             "protein": 45,
             "carbs": 60,
@@ -350,7 +350,7 @@
     {
         "id": 13,
         "name": "Zaru Soba",
-        "image": "/placeholder.svg?height=200&width=300&text=Zaru+Soba",
+        "image": "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/zaru-soba-recipe-feature.jpg",
         "nutrition": {
             "protein": 55,
             "carbs": 75,
@@ -379,7 +379,7 @@
     {
         "id": 14,
         "name": "Karaage Ayam",
-        "image": "/placeholder.svg?height=200&width=300&text=Karaage",
+        "image": "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/karaage-don-7.jpg",
         "nutrition": {
             "protein": 85,
             "carbs": 40,
@@ -408,7 +408,7 @@
     {
         "id": 15,
         "name": "Sunomono Salad",
-        "image": "/placeholder.svg?height=200&width=300&text=Sunomono",
+        "image": "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/japanese-cucumber-salad-recipe-sunomono.jpg",
         "nutrition": {
             "protein": 25,
             "carbs": 30,
@@ -437,7 +437,7 @@
     {
         "id": 16,
         "name": "Bento Box Seimbang",
-        "image": "/placeholder.svg?height=200&width=300&text=Bento+Box",
+        "image": "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/bento-box-simple-foto-resep-utama.jpg",
         "nutrition": {
             "protein": 75,
             "carbs": 65,
@@ -466,7 +466,7 @@
     {
         "id": 17,
         "name": "Matcha Chia Pudding",
-        "image": "/placeholder.svg?height=200&width=300&text=Matcha+Pudding",
+        "image": "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/Matcha-Chia-Pudding-Green-Tea-4.jpg",
         "nutrition": {
             "protein": 60,
             "carbs": 45,
@@ -495,7 +495,7 @@
     {
         "id": 18,
         "name": "Nasu Dengaku",
-        "image": "/placeholder.svg?height=200&width=300&text=Nasu+Dengaku",
+        "image": "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/R00277-Nasu-Dengaku-Miso.jpg",
         "nutrition": {
             "protein": 35,
             "carbs": 50,
@@ -524,7 +524,7 @@
     {
         "id": 19,
         "name": "Takoyaki Sehat",
-        "image": "/placeholder.svg?height=200&width=300&text=Takoyaki",
+        "image": "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/takoyaki-sehat.jfif",
         "nutrition": {
             "protein": 70,
             "carbs": 55,
@@ -553,7 +553,7 @@
     {
         "id": 20,
         "name": "Shabu-Shabu Sayuran",
-        "image": "/placeholder.svg?height=200&width=300&text=Shabu+Shabu",
+        "image": "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/shabu-shabu-5666991_1920.jpg",
         "nutrition": {
             "protein": 50,
             "carbs": 40,
