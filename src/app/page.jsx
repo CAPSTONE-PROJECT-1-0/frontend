@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center">
       {/* Hero Section with Background Slider */}
-      <section className="w-full py-12 md:py-24 lg:py-32 relative min-h-[600px] flex items-center">
+      <section className="w-full py-0 relative min-h-[600px] flex items-center">
         <HeroBackgroundSlider>
           <div className="container relative z-10 flex flex-col items-center justify-center gap-4 text-center h-full min-h-[500px]">
             <div className="animate-fade-in">
@@ -140,7 +140,7 @@ export default function Home() {
                 Daftar atau masuk ke akun Anda, lalu ambil foto makanan atau unggah gambar dari galeri.
               </p>
             </div>
-            <div className="flex flex-col items-center text-center gap-2 hover-lift">
+            <div className="flex flex-col items-center text-center gap-2 hover-lift rounded-2xl">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/50">
                 <Leaf className="h-8 w-8 text-green-600 dark:text-green-400" />
               </div>
@@ -149,7 +149,7 @@ export default function Home() {
                 Sistem kami menganalisis keseimbangan gizi makanan Anda secara otomatis.
               </p>
             </div>
-            <div className="flex flex-col items-center text-center gap-2 hover-lift">
+            <div className="flex flex-col items-center text-center gap-2 hover-lift rounded-2xl">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/50">
                 <Heart className="h-8 w-8 text-green-600 dark:text-green-400" />
               </div>
@@ -169,7 +169,7 @@ export default function Home() {
             Mulai Hidup Sehat Sekarang
           </h2>
           <p className="max-w-[700px] text-white/80 md:text-xl">
-            Bergabunglah dengan ribuan pengguna yang telah meningkatkan pola makan mereka dengan HealthyNippon.
+            Bergabunglah dengan ribuan pengguna yang telah meningkatkan pola makan mereka dengan Oishi Life.
           </p>
           {isAuthenticated ? (
             <Button asChild size="lg" className="bg-white text-green-600 hover:bg-white/90 shadow-lg">
