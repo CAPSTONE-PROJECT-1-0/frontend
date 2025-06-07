@@ -9,24 +9,24 @@ const HeroBackgroundSlider = ({ children }) => {
     // Array gambar makanan sehat
     const healthyFoodImages = [
         {
-            src: "/placeholder.svg?height=600&width=1200&text=Salmon+Teriyaki+Bowl",
-            alt: "Salmon Teriyaki Bowl with vegetables",
+            src: "/images/caesar-salad.jpg",
+            alt: "caesar-salad",
         },
         {
-            src: "/placeholder.svg?height=600&width=1200&text=Fresh+Sushi+Platter",
-            alt: "Fresh sushi platter with wasabi",
+            src: "/images/club_sandwich_16496_16x9.jpg.webp",
+            alt: "club_sandwich",
         },
         {
-            src: "/placeholder.svg?height=600&width=1200&text=Healthy+Bento+Box",
-            alt: "Traditional Japanese bento box",
+            src: "/images/Eggs-Benedict.jpg",
+            alt: "Eggs-Benedict",
         },
         {
-            src: "/placeholder.svg?height=600&width=1200&text=Miso+Soup+Set",
-            alt: "Miso soup with tofu and vegetables",
+            src: "/images/pcc-rosemary-grilled-salmon-flo.jpg",
+            alt: "grilled salmon",
         },
         {
-            src: "/placeholder.svg?height=600&width=1200&text=Vegetable+Tempura",
-            alt: "Light vegetable tempura with dipping sauce",
+            src: "/images/vegan-miso-soup.jpg",
+            alt: "vegan-miso-soup",
         },
     ]
 
