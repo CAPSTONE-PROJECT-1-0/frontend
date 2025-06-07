@@ -136,14 +136,18 @@ function DashboardContent() {
         throw new Error(data.details || data.error)
       }
 
-      // Ambil prediksi dengan confidence tertinggi (yang pertama)
+      // Ambil prediksi dengan confidence tertinggi (yang pertama dalam array)
       if (data.top_predictions && data.top_predictions.length > 0) {
-        setPredictionResult(data.top_predictions[0])
+        // Urutkan berdasarkan confidence tertinggi jika belum terurut
+        const sortedPredictions = data.top_predictions.sort((a, b) => b.confidence - a.confidence)
+        const bestPrediction = sortedPredictions[0]
+
+        setPredictionResult(bestPrediction)
         setAnalyzed(true)
 
         toast({
           title: "Analisis Selesai",
-          description: `Makanan terdeteksi: ${data.top_predictions[0].label.replace(/_/g, " ")}`,
+          description: `Makanan terdeteksi: ${formatFoodLabel(bestPrediction.label)} (${confidenceToPercent(bestPrediction.confidence)}% yakin)`,
         })
       } else {
         throw new Error("Tidak ada prediksi yang ditemukan")
@@ -186,23 +190,19 @@ function DashboardContent() {
     return Math.round(confidence * 100)
   }
 
-  // Tentukan nutrisi berdasarkan jenis makanan (dummy data untuk sementara)
-  const getNutritionValues = (foodLabel) => {
-    // Ini hanya data dummy, nantinya bisa diganti dengan data dari API
-    const nutritionMap = {
-      miso_soup: { protein: 65, carbs: 40, fat: 25, fiber: 70 },
-      spring_rolls: { protein: 40, carbs: 75, fat: 60, fiber: 30 },
-      macaroni_and_cheese: { protein: 50, carbs: 80, fat: 75, fiber: 20 },
-      ramen: { protein: 45, carbs: 85, fat: 70, fiber: 25 },
-      sushi: { protein: 80, carbs: 60, fat: 30, fiber: 40 },
-      tempura: { protein: 35, carbs: 65, fat: 85, fiber: 15 },
-      yakitori: { protein: 90, carbs: 20, fat: 55, fiber: 10 },
-      onigiri: { protein: 40, carbs: 75, fat: 15, fiber: 35 },
-      // Default values jika tidak ada yang cocok
-      default: { protein: 50, carbs: 50, fat: 50, fiber: 50 },
-    }
+  // Hitung persentase nutrisi berdasarkan nilai absolut
+  const calculateNutritionPercentage = (nutrition) => {
+    if (!nutrition) return { protein: 0, carbs: 0, fat: 0, calories: 0 }
 
-    return nutritionMap[foodLabel] || nutritionMap.default
+    // Hitung total makronutrien (protein + karbohidrat + lemak)
+    const totalMacros = nutrition.protein + nutrition.karbohidrat + nutrition.lemak
+
+    return {
+      protein: Math.round((nutrition.protein / totalMacros) * 100),
+      carbs: Math.round((nutrition.karbohidrat / totalMacros) * 100),
+      fat: Math.round((nutrition.lemak / totalMacros) * 100),
+      calories: nutrition.kalori,
+    }
   }
 
   const recommendedFoods = [
@@ -228,7 +228,7 @@ function DashboardContent() {
   ]
 
   // Dapatkan nilai nutrisi berdasarkan prediksi
-  const nutritionValues = predictionResult ? getNutritionValues(predictionResult.label) : null
+  const nutritionValues = predictionResult ? calculateNutritionPercentage(predictionResult.nutrition) : null
 
   return (
     <div className="container py-8">
@@ -354,7 +354,7 @@ function DashboardContent() {
           <Card className="h-full">
             <CardHeader>
               <CardTitle>Hasil Analisis</CardTitle>
-              <CardDescription>Keseimbangan gizi makanan Anda</CardDescription>
+              <CardDescription>Informasi nutrisi makanan Anda</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               {analyzed && predictionResult ? (
@@ -380,35 +380,41 @@ function DashboardContent() {
                         {predictionResult.nutrition_status.replace("_", " ")}
                       </div>
                     </div>
+                    <div className="text-sm text-muted-foreground">
+                      <strong>Kalori:</strong> {predictionResult.nutrition.kalori} kkal
+                    </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Protein</span>
-                      <span className="text-sm text-muted-foreground">{nutritionValues.protein}%</span>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium">Protein</span>
+                        <span className="text-sm text-muted-foreground">
+                          {predictionResult.nutrition.protein}g ({nutritionValues.protein}%)
+                        </span>
+                      </div>
+                      <Progress value={nutritionValues.protein} className="h-2 bg-green-100 dark:bg-green-900/50" />
                     </div>
-                    <Progress value={nutritionValues.protein} className="h-2 bg-green-100 dark:bg-green-900/50" />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Karbohidrat</span>
-                      <span className="text-sm text-muted-foreground">{nutritionValues.carbs}%</span>
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium">Karbohidrat</span>
+                        <span className="text-sm text-muted-foreground">
+                          {predictionResult.nutrition.karbohidrat}g ({nutritionValues.carbs}%)
+                        </span>
+                      </div>
+                      <Progress value={nutritionValues.carbs} className="h-2 bg-green-100 dark:bg-green-900/50" />
                     </div>
-                    <Progress value={nutritionValues.carbs} className="h-2 bg-green-100 dark:bg-green-900/50" />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Lemak</span>
-                      <span className="text-sm text-muted-foreground">{nutritionValues.fat}%</span>
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium">Lemak</span>
+                        <span className="text-sm text-muted-foreground">
+                          {predictionResult.nutrition.lemak}g ({nutritionValues.fat}%)
+                        </span>
+                      </div>
+                      <Progress value={nutritionValues.fat} className="h-2 bg-green-100 dark:bg-green-900/50" />
                     </div>
-                    <Progress value={nutritionValues.fat} className="h-2 bg-green-100 dark:bg-green-900/50" />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium">Serat</span>
-                      <span className="text-sm text-muted-foreground">{nutritionValues.fiber}%</span>
-                    </div>
-                    <Progress value={nutritionValues.fiber} className="h-2 bg-green-100 dark:bg-green-900/50" />
                   </div>
 
                   {predictionResult.nutrition_status !== "Seimbang" && (

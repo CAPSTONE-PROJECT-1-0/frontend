@@ -7,11 +7,11 @@ export default function About() {
     {
       name: "Yuda Reyvandra Herman",
       role: "Team Leader",
-      image: "/placeholder.svg?height=300&width=300",
+      image: "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/me.jpg",
       bio: "Cohort machine learning Coding Camp Powered by DBS Foundation.",
       social: {
         github: "https://github.com/Reyvndraa",
-        linkedin: "#",
+        linkedin: "https://www.linkedin.com/in/yuda-reyvandra-herman-648913351/",
         email: "reyvandrayuda@gmail.com",
       },
     },
@@ -40,11 +40,11 @@ export default function About() {
     {
       name: "Muhammad Wildan Nur R.",
       role: "Back End",
-      image: "/placeholder.svg?height=300&width=300",
+      image: "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/Foto CU.jpg",
       bio: "Cohort Full Stack Coding Camp Powered by DBS Foundation.",
       social: {
         github: "https://github.com/neorwildan",
-        linkedin: "#",
+        linkedin: "www.linkedin.com/in/muhammad-wildan-nur-romadhoni",
         email: "wildan5533@gmail.com",
       },
     },
@@ -74,7 +74,6 @@ export default function About() {
 
   return (
     <>
-
       <div className="container py-8">
         <div className="flex flex-col items-center text-center mb-12">
           <h1 className="text-3xl font-bold mb-4 text-green-700 dark:text-green-400">About Us</h1>
