@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
-import { Camera, Upload, RefreshCw, Check, X, Info, Salad } from "lucide-react"
+import { Camera, Upload, RefreshCw, Check, X, Info, Salad, AlertCircle } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/contexts/auth-context"
 import ProtectedRoute from "@/components/auth/protected-route"
 import CameraStream from "@/components/camera-stream"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export default function Dashboard() {
   return (
@@ -27,6 +28,8 @@ function DashboardContent() {
   const [analyzing, setAnalyzing] = useState(false)
   const [analyzed, setAnalyzed] = useState(false)
   const [showCamera, setShowCamera] = useState(false)
+  const [predictionResult, setPredictionResult] = useState(null)
+  const [predictionError, setPredictionError] = useState(null)
 
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0]
@@ -35,6 +38,8 @@ function DashboardContent() {
       reader.onload = (event) => {
         setSelectedImage(event.target?.result)
         setAnalyzed(false)
+        setPredictionResult(null)
+        setPredictionError(null)
         toast({
           title: "Gambar Berhasil Diunggah",
           description: "Gambar makanan berhasil diunggah dari galeri.",
@@ -48,6 +53,8 @@ function DashboardContent() {
     setSelectedImage(imageData)
     setShowCamera(false)
     setAnalyzed(false)
+    setPredictionResult(null)
+    setPredictionError(null)
     toast({
       title: "Foto Berhasil Diambil",
       description: "Foto makanan berhasil diambil dari kamera.",
@@ -70,6 +77,26 @@ function DashboardContent() {
     setShowCamera(true)
   }
 
+  // Fungsi untuk mengkonversi base64 ke blob
+  const base64ToBlob = (base64, contentType = "", sliceSize = 512) => {
+    const byteCharacters = atob(base64.split(",")[1])
+    const byteArrays = []
+
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+      const slice = byteCharacters.slice(offset, offset + sliceSize)
+      const byteNumbers = new Array(slice.length)
+
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i)
+      }
+
+      const byteArray = new Uint8Array(byteNumbers)
+      byteArrays.push(byteArray)
+    }
+
+    return new Blob(byteArrays, { type: contentType })
+  }
+
   const analyzeFood = async () => {
     if (!selectedImage) {
       toast({
@@ -81,17 +108,79 @@ function DashboardContent() {
     }
 
     setAnalyzing(true)
+    setPredictionError(null)
 
-    // Simulate analysis delay
-    setTimeout(() => {
-      setAnalyzing(false)
-      setAnalyzed(true)
+    try {
+      // Konversi base64 ke blob
+      const imageBlob = base64ToBlob(selectedImage, "image/jpeg")
 
-      toast({
-        title: "Analisis Selesai",
-        description: "Makanan berhasil dianalisis. Lihat hasil dan rekomendasi di sebelah kanan.",
+      // Buat FormData untuk mengirim gambar
+      const formData = new FormData()
+      formData.append("file", imageBlob, "food_image.jpg")
+
+      // Kirim ke API
+      const response = await fetch("https://backendml-production-23c3.up.railway.app/predict", {
+        method: "POST",
+        body: formData,
       })
-    }, 2000)
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`)
+      }
+
+      const data = await response.json()
+
+      // Ambil prediksi dengan confidence tertinggi (yang pertama)
+      if (data.top_predictions && data.top_predictions.length > 0) {
+        setPredictionResult(data.top_predictions[0])
+        setAnalyzed(true)
+
+        toast({
+          title: "Analisis Selesai",
+          description: `Makanan terdeteksi: ${data.top_predictions[0].label.replace(/_/g, " ")}`,
+        })
+      } else {
+        throw new Error("Tidak ada prediksi yang ditemukan")
+      }
+    } catch (error) {
+      console.error("Error analyzing food:", error)
+      setPredictionError(error.message)
+      toast({
+        title: "Gagal Menganalisis",
+        description: "Terjadi kesalahan saat menganalisis gambar. Silakan coba lagi.",
+        variant: "destructive",
+      })
+    } finally {
+      setAnalyzing(false)
+    }
+  }
+
+  // Format label makanan untuk tampilan
+  const formatFoodLabel = (label) => {
+    if (!label) return ""
+    return label
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ")
+  }
+
+  // Konversi confidence ke persentase
+  const confidenceToPercent = (confidence) => {
+    return Math.round(confidence * 100)
+  }
+
+  // Tentukan nutrisi berdasarkan jenis makanan (dummy data untuk sementara)
+  const getNutritionValues = (foodLabel) => {
+    // Ini hanya data dummy, nantinya bisa diganti dengan data dari API
+    const nutritionMap = {
+      miso_soup: { protein: 65, carbs: 40, fat: 25, fiber: 70 },
+      spring_rolls: { protein: 40, carbs: 75, fat: 60, fiber: 30 },
+      macaroni_and_cheese: { protein: 50, carbs: 80, fat: 75, fiber: 20 },
+      // Default values jika tidak ada yang cocok
+      default: { protein: 50, carbs: 50, fat: 50, fiber: 50 },
+    }
+
+    return nutritionMap[foodLabel] || nutritionMap.default
   }
 
   const recommendedFoods = [
@@ -115,6 +204,9 @@ function DashboardContent() {
         "Ayam panggang dengan lapisan panko yang dipanggang, bukan digoreng, dengan saus katsu rendah sodium.",
     },
   ]
+
+  // Dapatkan nilai nutrisi berdasarkan prediksi
+  const nutritionValues = predictionResult ? getNutritionValues(predictionResult.label) : null
 
   return (
     <div className="container py-8">
@@ -208,6 +300,13 @@ function DashboardContent() {
                 </TabsContent>
               </Tabs>
 
+              {predictionError && (
+                <Alert variant="destructive" className="mt-4">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{predictionError}</AlertDescription>
+                </Alert>
+              )}
+
               <div className="flex justify-center">
                 <Button
                   onClick={analyzeFood}
@@ -236,47 +335,72 @@ function DashboardContent() {
               <CardDescription>Keseimbangan gizi makanan Anda</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {analyzed ? (
+              {analyzed && predictionResult ? (
                 <>
+                  <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 mb-4">
+                    <h3 className="font-medium text-lg mb-1">{formatFoodLabel(predictionResult.label)}</h3>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="text-sm px-2 py-1 rounded-full bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-100">
+                        {confidenceToPercent(predictionResult.confidence)}% keyakinan
+                      </div>
+                      <div
+                        className={`text-sm px-2 py-1 rounded-full flex items-center gap-1 
+                        ${predictionResult.nutrition_status === "Seimbang"
+                            ? "bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-100"
+                            : "bg-amber-100 dark:bg-amber-800 text-amber-800 dark:text-amber-100"
+                          }`}
+                      >
+                        {predictionResult.nutrition_status === "Seimbang" ? (
+                          <Check className="h-3 w-3" />
+                        ) : (
+                          <X className="h-3 w-3" />
+                        )}
+                        {predictionResult.nutrition_status.replace("_", " ")}
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium">Protein</span>
-                      <span className="text-sm text-muted-foreground">65%</span>
+                      <span className="text-sm text-muted-foreground">{nutritionValues.protein}%</span>
                     </div>
-                    <Progress value={65} className="h-2 bg-green-100 dark:bg-green-900/50" />
+                    <Progress value={nutritionValues.protein} className="h-2 bg-green-100 dark:bg-green-900/50" />
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium">Karbohidrat</span>
-                      <span className="text-sm text-muted-foreground">40%</span>
+                      <span className="text-sm text-muted-foreground">{nutritionValues.carbs}%</span>
                     </div>
-                    <Progress value={40} className="h-2 bg-green-100 dark:bg-green-900/50" />
+                    <Progress value={nutritionValues.carbs} className="h-2 bg-green-100 dark:bg-green-900/50" />
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium">Lemak</span>
-                      <span className="text-sm text-muted-foreground">75%</span>
+                      <span className="text-sm text-muted-foreground">{nutritionValues.fat}%</span>
                     </div>
-                    <Progress value={75} className="h-2 bg-green-100 dark:bg-green-900/50" />
+                    <Progress value={nutritionValues.fat} className="h-2 bg-green-100 dark:bg-green-900/50" />
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium">Serat</span>
-                      <span className="text-sm text-muted-foreground">30%</span>
+                      <span className="text-sm text-muted-foreground">{nutritionValues.fiber}%</span>
                     </div>
-                    <Progress value={30} className="h-2 bg-green-100 dark:bg-green-900/50" />
+                    <Progress value={nutritionValues.fiber} className="h-2 bg-green-100 dark:bg-green-900/50" />
                   </div>
 
-                  <div className="mt-6 p-3 rounded-lg bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-900/50 flex items-start gap-3">
-                    <Info className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-                    <div>
-                      <h4 className="text-sm font-medium text-amber-800 dark:text-amber-300">Perhatian</h4>
-                      <p className="text-xs text-amber-700 dark:text-amber-400">
-                        Makanan ini memiliki kandungan lemak yang tinggi dan serat yang rendah. Pertimbangkan untuk
-                        menambahkan sayuran untuk meningkatkan asupan serat.
-                      </p>
+                  {predictionResult.nutrition_status !== "Seimbang" && (
+                    <div className="mt-6 p-3 rounded-lg bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-900/50 flex items-start gap-3">
+                      <Info className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="text-sm font-medium text-amber-800 dark:text-amber-300">Perhatian</h4>
+                        <p className="text-xs text-amber-700 dark:text-amber-400">
+                          Makanan ini memiliki kandungan gizi yang tidak seimbang. Pertimbangkan untuk memilih
+                          alternatif yang lebih sehat.
+                        </p>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </>
               ) : (
                 <div className="flex flex-col items-center justify-center h-48 text-center">
@@ -310,7 +434,7 @@ function DashboardContent() {
                 </CardHeader>
                 <CardContent className="pb-2">
                   <p className="text-sm text-muted-foreground">{food.description}</p>
-                  <div className="flex gap-2 mt-3">
+                  <div className="flex flex-wrap gap-2 mt-3">
                     <div className="bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded text-xs">
                       Protein: {food.nutrition.protein}%
                     </div>
