@@ -16,9 +16,8 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  const API_BASE_URL = "https://backend-mf-rohman6511-wmk9cpp4.leapcell.dev"
+  const API_BASE_URL = "https://becapstone-npc01011309-tu16d9a1.leapcell.dev"
 
-  // Check for existing token on mount
   useEffect(() => {
     const checkAuth = () => {
       const token = localStorage.getItem("token")
@@ -55,7 +54,6 @@ export function AuthProvider({ children }) {
 
 
       if (!response.ok) {
-        // Handle different error status codes
         if (response.status === 401) {
           throw new Error("Email atau password salah")
         } else if (response.status === 400) {
