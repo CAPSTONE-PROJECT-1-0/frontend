@@ -41,7 +41,7 @@ export default function Home() {
                     variant="outline"
                     className="bg-white/10 text-white hover:bg-white/20 border-white/30 backdrop-blur-sm"
                   >
-                    <Link href="/login">Masuk</Link>
+                    <Link href="/login">Login</Link>
                   </Button>
                 </>
               )}

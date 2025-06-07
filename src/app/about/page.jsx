@@ -18,18 +18,18 @@ export default function About() {
     {
       name: "Damianus Christopher Samosir",
       role: "Machine Learning",
-      image: "/placeholder.svg?height=300&width=300",
+      image: "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/christ.jpeg",
       bio: "Cohort machine learning Coding Camp Powered by DBS Foundation.",
       social: {
         github: "https://github.com/chrstprs",
-        linkedin: "#",
+        linkedin: "https://www.linkedin.com/in/damianus-christopher-samosir/",
         email: "christophersamosir@gmail.com",
       },
     },
     {
       name: "Reksi Hendra Pratama",
       role: " Machine Learning",
-      image: "/placeholder.svg?height=300&width=300",
+      image: "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/WhatsApp Image 2025-06-05 at 11.05.33 PM.jpeg",
       bio: "Cohort machine learning Coding Camp Powered by DBS Foundation.",
       social: {
         github: "https://github.com/ReksiHendraPratama",
@@ -51,22 +51,22 @@ export default function About() {
     {
       name: "Marsella Vindriani",
       role: "Front End",
-      image: "/placeholder.svg?height=300&width=300",
+      image: "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/WhatsApp Image 2025-06-05 at 3.35.37 PM.jpeg",
       bio: "Cohort Full Stack Coding Camp Powered by DBS Foundation.",
       social: {
         github: "https://github.com/marsellavindriani",
-        linkedin: "#",
+        linkedin: "https://www.linkedin.com/in/marsella-vindriani",
         email: "marcelavind61@gmail.com",
       },
     },
     {
       name: "Miftahurrohman",
       role: "Front End",
-      image: "/placeholder.svg?height=300&width=300",
+      image: "https://1xg7ah.leapcellobj.com/team-capstone-y434-dncs-vqmu666g/1000183718.jpg",
       bio: "Cohort Full Stack Coding Camp Powered by DBS Foundation.",
       social: {
         github: "https://github.com/mf-rohman",
-        linkedin: "#",
+        linkedin: "www.linkedin.com/in/mf-rohman",
         email: "mf.rohman0101@gmail.com",
       },
     },

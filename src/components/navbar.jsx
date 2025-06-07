@@ -89,7 +89,7 @@ export default function Navbar() {
             ) : (
               <div className="flex gap-2">
                 <Button variant="ghost" asChild>
-                  <Link href="/login">Masuk</Link>
+                  <Link href="/login">Login</Link>
                 </Button>
                 <Button
                   variant="default"
@@ -173,7 +173,7 @@ export default function Navbar() {
                   ) : (
                     <div className="space-y-2">
                       <Button variant="outline" className="w-full" asChild onClick={handleNavClick}>
-                        <Link href="/login">Masuk</Link>
+                        <Link href="/login">Login</Link>
                       </Button>
                       <Button
                         className="w-full bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"

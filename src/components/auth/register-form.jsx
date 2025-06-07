@@ -129,7 +129,7 @@ export default function RegisterForm() {
                                 <Input
                                     id="password"
                                     type={showPassword ? "text" : "password"}
-                                    placeholder="Minimal 6 karakter"
+                                    placeholder="Minimal 8 karakter"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     disabled={loading}
