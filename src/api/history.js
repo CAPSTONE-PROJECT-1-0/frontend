@@ -11,7 +11,8 @@
 export async function fetchAnalysisHistory(authenticatedFetch, user) {
   try {
     if (!user || !user.id) {
-      throw new Error("User ID is required")
+      console.warn("User or user ID not available:", user)
+      return []
     }
 
     const response = await authenticatedFetch(
@@ -21,8 +22,12 @@ export async function fetchAnalysisHistory(authenticatedFetch, user) {
     if (!response.ok) {
       if (response.status === 404) {
         // User belum memiliki history, return array kosong
+        console.log("No history found for user")
         return []
       }
+
+      const errorText = await response.text()
+      console.error("API Error:", response.status, errorText)
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
@@ -37,7 +42,13 @@ export async function fetchAnalysisHistory(authenticatedFetch, user) {
     return Array.isArray(result) ? result : []
   } catch (error) {
     console.error("Error fetching history:", error)
-    throw error
+
+    // Jangan throw error, return empty array untuk UX yang lebih baik
+    if (error.message.includes("User ID is required")) {
+      console.warn("User ID is required for fetching history")
+    }
+
+    return []
   }
 }
 
