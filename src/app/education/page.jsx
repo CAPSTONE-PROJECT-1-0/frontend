@@ -564,7 +564,7 @@ export default function EducationPage() {
                                         asChild
                                         size="lg"
                                         variant="outline"
-                                        className="bg-white/10 text-white hover:bg-white/20 border-white/30 backdrop-blur-sm"
+                                        className="bg-white/10 text-black hover:bg-white/20 border-white/30 backdrop-blur-sm"
                                     >
                                         <Link href="/login">Login</Link>
                                     </Button>
