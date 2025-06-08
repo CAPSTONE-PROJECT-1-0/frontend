@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import recommendedFoodsData from "@/data/recommended-foods.json"
+import { fetchAnalysisHistory, formatHistoryItem, saveAnalysisToHistory } from "@/api"
 
 export default function Dashboard() {
   return (
@@ -41,38 +42,32 @@ function DashboardContent() {
   const [predictionResult, setPredictionResult] = useState(null)
   const [predictionError, setPredictionError] = useState(null)
   const [recommendedFoods, setRecommendedFoods] = useState([])
-  // Tambahkan state untuk history
+  // State untuk history
   const [historyData, setHistoryData] = useState([])
   const [historyLoading, setHistoryLoading] = useState(true)
   const [historyError, setHistoryError] = useState(null)
 
   // Fungsi untuk fetch history data
-  const fetchHistoryData = async () => {
+  const loadHistoryData = async () => {
     try {
       setHistoryLoading(true)
       setHistoryError(null)
 
-      const response = await authenticatedFetch("https://becapstone-npc01011309-tu16d9a1.leapcell.dev/upload-history")
+      const data = await fetchAnalysisHistory(authenticatedFetch, user)
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const data = await response.json()
-
-      // Pastikan data adalah array, jika tidak buat array kosong
-      const historyArray = Array.isArray(data) ? data : data.data ? data.data : []
-      setHistoryData(historyArray)
+      // Format data untuk tampilan
+      const formattedData = data.map((item, index) => formatHistoryItem(item, index))
+      setHistoryData(formattedData)
     } catch (error) {
       console.error("Error fetching history:", error)
       setHistoryError(error.message)
 
-      // Fallback ke data dummy jika API gagal
+      // Fallback ke data kosong jika API gagal
       setHistoryData([])
 
       toast({
         title: "Gagal Memuat Riwayat",
-        description: "Tidak dapat memuat riwayat analisis. Menggunakan data lokal.",
+        description: "Tidak dapat memuat riwayat analisis. Silakan coba lagi nanti.",
         variant: "destructive",
       })
     } finally {
@@ -83,7 +78,7 @@ function DashboardContent() {
   // Fetch history data saat komponen mount
   useEffect(() => {
     if (user) {
-      fetchHistoryData()
+      loadHistoryData()
     }
   }, [user])
 
@@ -180,9 +175,13 @@ function DashboardContent() {
       const formData = new FormData()
       formData.append("file", imageBlob, "food_image.jpg")
 
-      // Kirim ke API route Next.js (bukan langsung ke ML API)
+      // Kirim ke API route Next.js dengan authorization header
+      const token = localStorage.getItem("token")
       const response = await fetch("/api/predict", {
         method: "POST",
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
         body: formData,
       })
 
@@ -215,6 +214,21 @@ function DashboardContent() {
           title: "Analisis Selesai",
           description: `Makanan terdeteksi: ${formatFoodLabel(bestPrediction.label)} (${confidenceToPercent(bestPrediction.confidence)}% yakin)`,
         })
+
+        // Simpan hasil analisis ke history
+        try {
+          await saveAnalysisToHistory(authenticatedFetch, user, {
+            imageUrl: selectedImage,
+            result: bestPrediction,
+            recommendations: randomRecommendations,
+          })
+
+          // Refresh history data setelah berhasil menyimpan
+          loadHistoryData()
+        } catch (saveError) {
+          console.error("Failed to save analysis to history:", saveError)
+          // Tidak perlu menampilkan error ke user, karena analisis tetap berhasil
+        }
       } else {
         throw new Error("Tidak ada prediksi yang ditemukan")
       }
@@ -273,6 +287,21 @@ function DashboardContent() {
 
   // Dapatkan nilai nutrisi berdasarkan prediksi
   const nutritionValues = predictionResult ? calculateNutritionPercentage(predictionResult.nutrition) : null
+
+  // Format tanggal untuk tampilan
+  const formatDate = (dateString) => {
+    if (!dateString) return "Tanggal tidak tersedia"
+
+    try {
+      return new Date(dateString).toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    } catch (error) {
+      return "Format tanggal tidak valid"
+    }
+  }
 
   return (
     <div className="container py-8">
@@ -621,7 +650,7 @@ function DashboardContent() {
       <div className="mt-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-green-700 dark:text-green-400">Riwayat Analisis</h2>
-          <Button onClick={fetchHistoryData} variant="outline" size="sm" disabled={historyLoading}>
+          <Button onClick={loadHistoryData} variant="outline" size="sm" disabled={historyLoading}>
             <RefreshCw className={`h-4 w-4 mr-2 ${historyLoading ? "animate-spin" : ""}`} />
             Refresh
           </Button>
@@ -655,12 +684,12 @@ function DashboardContent() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {historyData.slice(0, 8).map((item, index) => (
-              <Card key={item.id || index} className="overflow-hidden hover:shadow-lg transition-shadow">
+              <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="relative h-32 w-full">
-                  {item.image_url || item.image ? (
+                  {item.imageUrl ? (
                     <Image
-                      src={item.image_url || item.image || "/placeholder.svg"}
-                      alt={item.food_name || item.prediction || `Food history ${index + 1}`}
+                      src={item.imageUrl || "/placeholder.svg"}
+                      alt={item.name}
                       fill
                       className="object-cover"
                       onError={(e) => {
@@ -675,7 +704,7 @@ function DashboardContent() {
 
                   {/* Status Badge */}
                   <div className="absolute top-2 right-2">
-                    {item.nutrition_status === "Seimbang" || item.status === "healthy" ? (
+                    {item.status === "healthy" ? (
                       <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs flex items-center gap-1">
                         <Check className="h-3 w-3" />
                         Sehat
@@ -691,53 +720,37 @@ function DashboardContent() {
 
                 <CardContent className="p-3">
                   <div className="space-y-2">
-                    <h3 className="font-medium text-sm line-clamp-1">
-                      {item.food_name || item.prediction || item.label || `Makanan #${index + 1}`}
-                    </h3>
+                    <h3 className="font-medium text-sm line-clamp-1">{item.name}</h3>
 
                     {/* Confidence Score */}
                     {item.confidence && (
-                      <div className="text-xs text-muted-foreground">
-                        Keyakinan: {Math.round(item.confidence * 100)}%
-                      </div>
+                      <div className="text-xs text-muted-foreground">Keyakinan: {item.confidence}%</div>
                     )}
 
                     {/* Calories */}
                     {item.calories && <div className="text-xs text-muted-foreground">Kalori: {item.calories} kkal</div>}
 
                     {/* Date */}
-                    <div className="text-xs text-muted-foreground">
-                      {item.created_at
-                        ? new Date(item.created_at).toLocaleDateString("id-ID", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })
-                        : item.date
-                          ? new Date(item.date).toLocaleDateString("id-ID")
-                          : "Tanggal tidak tersedia"}
-                    </div>
+                    <div className="text-xs text-muted-foreground">{formatDate(item.date)}</div>
 
                     {/* Nutrition Info */}
-                    {(item.protein || item.carbs || item.fat) && (
-                      <div className="flex gap-1 flex-wrap">
-                        {item.protein && (
-                          <Badge variant="outline" className="text-xs px-1 py-0">
-                            P: {item.protein}g
-                          </Badge>
-                        )}
-                        {item.carbs && (
-                          <Badge variant="outline" className="text-xs px-1 py-0">
-                            C: {item.carbs}g
-                          </Badge>
-                        )}
-                        {item.fat && (
-                          <Badge variant="outline" className="text-xs px-1 py-0">
-                            F: {item.fat}g
-                          </Badge>
-                        )}
-                      </div>
-                    )}
+                    <div className="flex gap-1 flex-wrap">
+                      {item.nutrition.protein && (
+                        <Badge variant="outline" className="text-xs px-1 py-0">
+                          P: {item.nutrition.protein}g
+                        </Badge>
+                      )}
+                      {item.nutrition.carbs && (
+                        <Badge variant="outline" className="text-xs px-1 py-0">
+                          C: {item.nutrition.carbs}g
+                        </Badge>
+                      )}
+                      {item.nutrition.fat && (
+                        <Badge variant="outline" className="text-xs px-1 py-0">
+                          F: {item.nutrition.fat}g
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
