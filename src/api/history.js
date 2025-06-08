@@ -2,6 +2,8 @@
  * API functions for history-related operations
  */
 
+import { request } from "http"
+
 /**
  * Fetch user's food analysis history
  * @param {Function} authenticatedFetch - Authenticated fetch function from auth context
@@ -10,18 +12,27 @@
  */
 export async function fetchAnalysisHistory(authenticatedFetch, user) {
   try {
+
+
     if (!user || !user.id) {
       console.warn("User or user ID not available:", user)
       return []
     }
 
     const response = await authenticatedFetch(
-      `https://becapstone-npc01011309-tu16d9a1.leapcell.dev/upload-history/${user.id}`,
+      `https://becapstone-npc01011309-tu16d9a1.leapcell.dev/upload-history/user/${user.id}`,{
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
     )
 
+    // console.log({t: await response.text()})
     if (!response.ok) {
       if (response.status === 404) {
         // User belum memiliki history, return array kosong
+        
         console.log("No history found for user")
         return []
       }

@@ -1,4 +1,5 @@
 "use client"
+const API_BASE_URL = "https://becapstone-npc01011309-tu16d9a1.leapcell.dev"
 
 import { createContext, useContext, useState, useEffect } from "react"
 
@@ -14,22 +15,24 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
+  const [u, setU] = useState(null)
   const [loading, setLoading] = useState(true)
-
-  const API_BASE_URL = "https://becapstone-npc01011309-tu16d9a1.leapcell.dev"
-
   useEffect(() => {
+
     const checkAuth = () => {
       const token = localStorage.getItem("token")
       const savedUser = localStorage.getItem("user")
 
       if (token && savedUser) {
         try {
-          setUser(JSON.parse(savedUser))
+          const us = JSON.parse(savedUser);
+          setUser(us)
+          setU(us)
+          console.log({ u, user })
         } catch (error) {
           console.error("Error parsing saved user:", error)
-          localStorage.removeItem("user")
-          localStorage.removeItem("token")
+          // localStorage.removeItem("user")
+          // localStorage.removeItem("token")
         }
       }
 
@@ -37,7 +40,13 @@ export function AuthProvider({ children }) {
     }
 
     checkAuth()
+    console.log({ user, u })
   }, [])
+
+  // if (!user) {
+  //   checkAuth();
+  // }
+
 
   const login = async (email, password) => {
     try {
@@ -51,7 +60,6 @@ export function AuthProvider({ children }) {
       })
 
       const result = await response.json()
-
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -72,9 +80,9 @@ export function AuthProvider({ children }) {
 
       // Extract user data and token
       const userData = {
-        id: result.user?.id || result.id,
-        email: result.user?.email || result.email,
-        name: result.user?.name || result.name || email.split("@")[0],
+        id: result.data?.id || result.id,
+        email: result.data?.email || result.email,
+        name: result.data?.name || result.name || email.split("@")[0],
         token: token,
       }
 
