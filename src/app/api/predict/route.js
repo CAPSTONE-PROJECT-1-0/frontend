@@ -8,17 +8,36 @@ export async function POST(request) {
     // Get authorization header from the request
     const authHeader = request.headers.get("authorization")
 
-    // Forward the request to the ML API
+    if (!authHeader) {
+      return NextResponse.json({ error: "Authorization token required" }, { status: 401 })
+    }
+
+    // Extract user info from token (you might need to decode JWT here)
+    // For now, we'll get user info from the form data or headers
+    const userEmail = request.headers.get("x-user-email")
+    const userName = request.headers.get("x-user-name")
+
+    // Add user info to form data if available
+    if (userEmail) {
+      formData.append("userEmail", userEmail)
+    }
+    if (userName) {
+      formData.append("userName", userName)
+    }
+
+    // Forward the request to the ML API with authorization
     const response = await fetch("https://backendml-production-23c3.up.railway.app/predict", {
       method: "POST",
       body: formData,
       headers: {
-        ...(authHeader && { Authorization: authHeader }),
+        Authorization: authHeader,
       },
       // Don't set Content-Type header, let the browser set it with boundary for multipart/form-data
     })
 
     if (!response.ok) {
+      const errorText = await response.text()
+      console.error("ML API error:", errorText)
       throw new Error(`ML API responded with status: ${response.status}`)
     }
 
@@ -30,7 +49,7 @@ export async function POST(request) {
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, x-user-email, x-user-name",
       },
     })
   } catch (error) {
@@ -46,7 +65,7 @@ export async function POST(request) {
         headers: {
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Methods": "POST, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization, x-user-email, x-user-name",
         },
       },
     )
@@ -60,7 +79,7 @@ export async function OPTIONS(request) {
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization, x-user-email, x-user-name",
     },
   })
 }
