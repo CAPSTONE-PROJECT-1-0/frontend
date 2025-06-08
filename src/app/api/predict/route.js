@@ -49,7 +49,7 @@ export async function POST(request) {
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, x-user-email, x-user-name",
+        "Access-Control-Allow-Headers": "*",
       },
     })
   } catch (error) {
@@ -65,7 +65,7 @@ export async function POST(request) {
         headers: {
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Methods": "POST, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization, x-user-email, x-user-name",
+          "Access-Control-Allow-Headers": "*",
         },
       },
     )
@@ -79,7 +79,7 @@ export async function OPTIONS(request) {
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization, x-user-email, x-user-name",
+      "Access-Control-Allow-Headers": "*",
     },
   })
 }

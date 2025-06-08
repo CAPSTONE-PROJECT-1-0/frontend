@@ -164,6 +164,16 @@ function DashboardContent() {
       return
     }
 
+    // Validasi user
+    if (!user || !user.email || !user.name) {
+      toast({
+        title: "Error",
+        description: "Informasi pengguna tidak lengkap. Silakan login ulang.",
+        variant: "destructive",
+      })
+      return
+    }
+
     setAnalyzing(true)
     setPredictionError(null)
 
@@ -181,15 +191,17 @@ function DashboardContent() {
         method: "POST",
         headers: {
           ...(token && { Authorization: `Bearer ${token}` }),
-          ...(user?.email && { "x-user-email": user.email }),
-          ...(user?.name && { "x-user-name": user.name }),
+          "x-user-email": user.email,
+          "x-user-name": user.name,
         },
         body: formData,
       })
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.details || `Error: ${response.status} ${response.statusText}`)
+        console.log({err: await response.text()})
+        throw new Error("xx")
+        // const errorData = await response.json().catch(() => ({}))
+        // throw new Error(errorData.details || `Error: ${response.statusText}`)
       }
 
       const data = await response.json()
@@ -216,10 +228,9 @@ function DashboardContent() {
         })
 
         // Refresh history data setelah analisis berhasil
-        // Tunggu sebentar untuk memastikan data sudah tersimpan di backend
         setTimeout(() => {
           loadHistoryData()
-        }, 1000)
+        }, 2000) // Tunggu 2 detik untuk memastikan data tersimpan
       } else {
         throw new Error("Format response tidak sesuai")
       }
@@ -233,6 +244,8 @@ function DashboardContent() {
         errorMessage = "Koneksi ke server gagal. Periksa koneksi internet Anda."
       } else if (error.message.includes("500")) {
         errorMessage = "Server sedang bermasalah. Silakan coba lagi nanti."
+      } else if (error.message.includes("400")) {
+        errorMessage = "Data yang dikirim tidak valid. Pastikan Anda sudah login."
       } else if (error.message.includes("timeout")) {
         errorMessage = "Analisis memakan waktu terlalu lama. Silakan coba lagi."
       } else if (error.message.includes("Authorization")) {
@@ -378,7 +391,9 @@ function DashboardContent() {
                             onClick={startCamera}
                           >
                             <Camera className="h-10 w-10 text-green-500 mb-2" />
-                            <p className="text-sm text-muted-foreground text-center px-4">Klik untuk mengakses kamera</p>
+                            <p className="text-sm text-muted-foreground text-center px-4">
+                              Klik untuk mengakses kamera
+                            </p>
                             <p className="text-xs text-muted-foreground text-center px-4 mt-1">
                               Pastikan browser memiliki izin akses kamera
                             </p>
@@ -434,10 +449,11 @@ function DashboardContent() {
                         </div>
                         <div
                           className={`text-sm px-2 py-1 rounded-full flex items-center gap-1 
-                        ${predictionResult.nutrition_status === "Seimbang"
-                              ? "bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-100"
-                              : "bg-amber-100 dark:bg-amber-800 text-amber-800 dark:text-amber-100"
-                            }`}
+                        ${
+                          predictionResult.nutrition_status === "Seimbang"
+                            ? "bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-100"
+                            : "bg-amber-100 dark:bg-amber-800 text-amber-800 dark:text-amber-100"
+                        }`}
                         >
                           {predictionResult.nutrition_status === "Seimbang" ? (
                             <Check className="h-3 w-3" />
@@ -569,7 +585,9 @@ function DashboardContent() {
                           {/* Info Nutrisi */}
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                              <div className="text-lg font-bold text-green-600 dark:text-green-400">{food.calories}</div>
+                              <div className="text-lg font-bold text-green-600 dark:text-green-400">
+                                {food.calories}
+                              </div>
                               <div className="text-xs text-muted-foreground">Kalori</div>
                             </div>
                             <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
@@ -722,7 +740,9 @@ function DashboardContent() {
                       )}
 
                       {/* Calories */}
-                      {item.calories && <div className="text-xs text-muted-foreground">Kalori: {item.calories} kkal</div>}
+                      {item.calories && (
+                        <div className="text-xs text-muted-foreground">Kalori: {item.calories} kkal</div>
+                      )}
 
                       {/* Date */}
                       <div className="text-xs text-muted-foreground">{formatDate(item.date)}</div>
