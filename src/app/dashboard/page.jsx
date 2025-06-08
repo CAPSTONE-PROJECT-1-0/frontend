@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import recommendedFoodsData from "@/data/recommended-foods.json"
-import { fetchAnalysisHistory, formatHistoryItem, saveAnalysisToHistory } from "@/api"
+import { fetchAnalysisHistory, formatHistoryItem } from "@/api"
 
 export default function Dashboard() {
   return (
@@ -175,12 +175,14 @@ function DashboardContent() {
       const formData = new FormData()
       formData.append("file", imageBlob, "food_image.jpg")
 
-      // Kirim ke API route Next.js dengan authorization header
+      // Kirim ke API route Next.js dengan authorization header dan user info
       const token = localStorage.getItem("token")
       const response = await fetch("/api/predict", {
         method: "POST",
         headers: {
           ...(token && { Authorization: `Bearer ${token}` }),
+          ...(user?.email && { "x-user-email": user.email }),
+          ...(user?.name && { "x-user-name": user.name }),
         },
         body: formData,
       })
@@ -197,13 +199,11 @@ function DashboardContent() {
         throw new Error(data.details || data.error)
       }
 
-      // Ambil prediksi dengan confidence tertinggi (yang pertama dalam array)
-      if (data.top_predictions && data.top_predictions.length > 0) {
-        // Urutkan berdasarkan confidence tertinggi jika belum terurut
-        const sortedPredictions = data.top_predictions.sort((a, b) => b.confidence - a.confidence)
-        const bestPrediction = sortedPredictions[0]
+      // Handle response dari Flask API yang sudah diupdate
+      if (data.status === "success" && data.prediction) {
+        const prediction = data.prediction
 
-        setPredictionResult(bestPrediction)
+        setPredictionResult(prediction)
         setAnalyzed(true)
 
         // Generate random recommendations setiap kali analisis selesai
@@ -212,25 +212,16 @@ function DashboardContent() {
 
         toast({
           title: "Analisis Selesai",
-          description: `Makanan terdeteksi: ${formatFoodLabel(bestPrediction.label)} (${confidenceToPercent(bestPrediction.confidence)}% yakin)`,
+          description: `Makanan terdeteksi: ${formatFoodLabel(prediction.label)} (${confidenceToPercent(prediction.confidence)}% yakin)`,
         })
 
-        // Simpan hasil analisis ke history
-        try {
-          await saveAnalysisToHistory(authenticatedFetch, user, {
-            imageUrl: selectedImage,
-            result: bestPrediction,
-            recommendations: randomRecommendations,
-          })
-
-          // Refresh history data setelah berhasil menyimpan
+        // Refresh history data setelah analisis berhasil
+        // Tunggu sebentar untuk memastikan data sudah tersimpan di backend
+        setTimeout(() => {
           loadHistoryData()
-        } catch (saveError) {
-          console.error("Failed to save analysis to history:", saveError)
-          // Tidak perlu menampilkan error ke user, karena analisis tetap berhasil
-        }
+        }, 1000)
       } else {
-        throw new Error("Tidak ada prediksi yang ditemukan")
+        throw new Error("Format response tidak sesuai")
       }
     } catch (error) {
       console.error("Error analyzing food:", error)
@@ -244,6 +235,8 @@ function DashboardContent() {
         errorMessage = "Server sedang bermasalah. Silakan coba lagi nanti."
       } else if (error.message.includes("timeout")) {
         errorMessage = "Analisis memakan waktu terlalu lama. Silakan coba lagi."
+      } else if (error.message.includes("Authorization")) {
+        errorMessage = "Sesi Anda telah berakhir. Silakan login kembali."
       }
 
       toast({
@@ -304,478 +297,480 @@ function DashboardContent() {
   }
 
   return (
-    <div className="container py-8">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-green-700 dark:text-green-400">Dashboard Analisis Makanan</h1>
-        <p className="text-muted-foreground">Selamat datang, {user?.name}!</p>
-      </div>
+    <>
+      <div className="container py-8">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-green-700 dark:text-green-400">Dashboard Analisis Makanan</h1>
+          <p className="text-muted-foreground">Selamat datang, {user?.name}!</p>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2">
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle>Analisis Makanan</CardTitle>
-              <CardDescription>Unggah atau ambil foto makanan untuk dianalisis</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Tabs defaultValue="upload" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="upload">Unggah Gambar</TabsTrigger>
-                  <TabsTrigger value="camera">Kamera</TabsTrigger>
-                </TabsList>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2">
+            <Card className="h-full">
+              <CardHeader>
+                <CardTitle>Analisis Makanan</CardTitle>
+                <CardDescription>Unggah atau ambil foto makanan untuk dianalisis</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Tabs defaultValue="upload" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="upload">Unggah Gambar</TabsTrigger>
+                    <TabsTrigger value="camera">Kamera</TabsTrigger>
+                  </TabsList>
 
-                <TabsContent value="upload" className="space-y-4">
-                  <div className="flex justify-center">
-                    <div className="relative w-full max-w-md h-64 border-2 border-dashed border-green-200 dark:border-green-800 rounded-lg flex flex-col items-center justify-center overflow-hidden">
-                      {selectedImage ? (
-                        <Image
-                          src={selectedImage || "/placeholder.svg"}
-                          alt="Uploaded food"
-                          fill
-                          className="object-cover"
-                        />
-                      ) : (
-                        <>
-                          <Upload className="h-10 w-10 text-green-500 mb-2" />
-                          <p className="text-sm text-muted-foreground text-center px-4">
-                            Klik untuk memilih gambar atau seret dan lepas
-                          </p>
-                        </>
-                      )}
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="absolute inset-0 opacity-0 cursor-pointer"
-                        onChange={handleImageUpload}
-                      />
-                    </div>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="camera" className="space-y-4">
-                  <div className="flex justify-center">
-                    {showCamera ? (
-                      <CameraStream
-                        onCapture={handleCameraCapture}
-                        onClose={handleCameraClose}
-                        onError={handleCameraError}
-                      />
-                    ) : selectedImage ? (
-                      <div className="relative w-full max-w-md">
-                        <div className="relative h-64 w-full rounded-lg overflow-hidden border-2 border-green-200 dark:border-green-800">
+                  <TabsContent value="upload" className="space-y-4">
+                    <div className="flex justify-center">
+                      <div className="relative w-full max-w-md h-64 border-2 border-dashed border-green-200 dark:border-green-800 rounded-lg flex flex-col items-center justify-center overflow-hidden">
+                        {selectedImage ? (
                           <Image
                             src={selectedImage || "/placeholder.svg"}
-                            alt="Captured food"
+                            alt="Uploaded food"
                             fill
                             className="object-cover"
                           />
+                        ) : (
+                          <>
+                            <Upload className="h-10 w-10 text-green-500 mb-2" />
+                            <p className="text-sm text-muted-foreground text-center px-4">
+                              Klik untuk memilih gambar atau seret dan lepas
+                            </p>
+                          </>
+                        )}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="absolute inset-0 opacity-0 cursor-pointer"
+                          onChange={handleImageUpload}
+                        />
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="camera" className="space-y-4">
+                    <div className="flex justify-center">
+                      {showCamera ? (
+                        <CameraStream
+                          onCapture={handleCameraCapture}
+                          onClose={handleCameraClose}
+                          onError={handleCameraError}
+                        />
+                      ) : selectedImage ? (
+                        <div className="relative w-full max-w-md">
+                          <div className="relative h-64 w-full rounded-lg overflow-hidden border-2 border-green-200 dark:border-green-800">
+                            <Image
+                              src={selectedImage || "/placeholder.svg"}
+                              alt="Captured food"
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="flex gap-2 mt-4 justify-center">
+                            <Button onClick={startCamera} className="bg-green-600 hover:bg-green-700" size="lg">
+                              <Camera className="mr-2 h-4 w-4" />
+                              Ambil Ulang
+                            </Button>
+                          </div>
                         </div>
-                        <div className="flex gap-2 mt-4 justify-center">
-                          <Button onClick={startCamera} className="bg-green-600 hover:bg-green-700" size="lg">
-                            <Camera className="mr-2 h-4 w-4" />
-                            Ambil Ulang
-                          </Button>
+                      ) : (
+                        <div className="w-full max-w-md space-y-4">
+                          <div
+                            className="relative w-full h-64 border-2 border-dashed border-green-200 dark:border-green-800 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-green-300 dark:hover:border-green-700 transition-colors"
+                            onClick={startCamera}
+                          >
+                            <Camera className="h-10 w-10 text-green-500 mb-2" />
+                            <p className="text-sm text-muted-foreground text-center px-4">Klik untuk mengakses kamera</p>
+                            <p className="text-xs text-muted-foreground text-center px-4 mt-1">
+                              Pastikan browser memiliki izin akses kamera
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </TabsContent>
+                </Tabs>
+
+                {predictionError && (
+                  <Alert variant="destructive" className="mt-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{predictionError}</AlertDescription>
+                  </Alert>
+                )}
+
+                <div className="flex justify-center">
+                  <Button
+                    onClick={analyzeFood}
+                    disabled={!selectedImage || analyzing}
+                    className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
+                    size="lg"
+                  >
+                    {analyzing ? (
+                      <>
+                        <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                        Menganalisis...
+                      </>
+                    ) : (
+                      "Analisis Makanan"
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div>
+            <Card className="h-full">
+              <CardHeader>
+                <CardTitle>Hasil Analisis</CardTitle>
+                <CardDescription>Informasi nutrisi makanan Anda</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {analyzed && predictionResult ? (
+                  <>
+                    <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 mb-4">
+                      <h3 className="font-medium text-lg mb-1">{formatFoodLabel(predictionResult.label)}</h3>
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="text-sm px-2 py-1 rounded-full bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-100">
+                          {confidenceToPercent(predictionResult.confidence)}% keyakinan
+                        </div>
+                        <div
+                          className={`text-sm px-2 py-1 rounded-full flex items-center gap-1 
+                        ${predictionResult.nutrition_status === "Seimbang"
+                              ? "bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-100"
+                              : "bg-amber-100 dark:bg-amber-800 text-amber-800 dark:text-amber-100"
+                            }`}
+                        >
+                          {predictionResult.nutrition_status === "Seimbang" ? (
+                            <Check className="h-3 w-3" />
+                          ) : (
+                            <X className="h-3 w-3" />
+                          )}
+                          {predictionResult.nutrition_status.replace("_", " ")}
                         </div>
                       </div>
-                    ) : (
-                      <div className="w-full max-w-md space-y-4">
-                        <div
-                          className="relative w-full h-64 border-2 border-dashed border-green-200 dark:border-green-800 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-green-300 dark:hover:border-green-700 transition-colors"
-                          onClick={startCamera}
-                        >
-                          <Camera className="h-10 w-10 text-green-500 mb-2" />
-                          <p className="text-sm text-muted-foreground text-center px-4">Klik untuk mengakses kamera</p>
-                          <p className="text-xs text-muted-foreground text-center px-4 mt-1">
-                            Pastikan browser memiliki izin akses kamera
+                      <div className="text-sm text-muted-foreground">
+                        <strong>Kalori:</strong> {predictionResult.nutrition.kalori} kkal
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium">Protein</span>
+                          <span className="text-sm text-muted-foreground">
+                            {predictionResult.nutrition.protein}g ({nutritionValues.protein}%)
+                          </span>
+                        </div>
+                        <Progress value={nutritionValues.protein} className="h-2 bg-green-100 dark:bg-green-900/50" />
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium">Karbohidrat</span>
+                          <span className="text-sm text-muted-foreground">
+                            {predictionResult.nutrition.karbohidrat}g ({nutritionValues.carbs}%)
+                          </span>
+                        </div>
+                        <Progress value={nutritionValues.carbs} className="h-2 bg-green-100 dark:bg-green-900/50" />
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium">Lemak</span>
+                          <span className="text-sm text-muted-foreground">
+                            {predictionResult.nutrition.lemak}g ({nutritionValues.fat}%)
+                          </span>
+                        </div>
+                        <Progress value={nutritionValues.fat} className="h-2 bg-green-100 dark:bg-green-900/50" />
+                      </div>
+                    </div>
+
+                    {predictionResult.nutrition_status !== "Seimbang" && (
+                      <div className="mt-6 p-3 rounded-lg bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-900/50 flex items-start gap-3">
+                        <Info className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                        <div>
+                          <h4 className="text-sm font-medium text-amber-800 dark:text-amber-300">Perhatian</h4>
+                          <p className="text-xs text-amber-700 dark:text-amber-400">
+                            Makanan ini memiliki kandungan gizi yang tidak seimbang. Pertimbangkan untuk memilih
+                            alternatif yang lebih sehat.
                           </p>
                         </div>
                       </div>
                     )}
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-48 text-center">
+                    <Salad className="h-12 w-12 text-muted-foreground mb-2 opacity-50" />
+                    <p className="text-muted-foreground">
+                      Unggah gambar makanan dan klik "Analisis Makanan" untuk melihat hasil
+                    </p>
                   </div>
-                </TabsContent>
-              </Tabs>
-
-              {predictionError && (
-                <Alert variant="destructive" className="mt-4">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{predictionError}</AlertDescription>
-                </Alert>
-              )}
-
-              <div className="flex justify-center">
-                <Button
-                  onClick={analyzeFood}
-                  disabled={!selectedImage || analyzing}
-                  className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
-                  size="lg"
-                >
-                  {analyzing ? (
-                    <>
-                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                      Menganalisis...
-                    </>
-                  ) : (
-                    "Analisis Makanan"
-                  )}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div>
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle>Hasil Analisis</CardTitle>
-              <CardDescription>Informasi nutrisi makanan Anda</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {analyzed && predictionResult ? (
-                <>
-                  <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 mb-4">
-                    <h3 className="font-medium text-lg mb-1">{formatFoodLabel(predictionResult.label)}</h3>
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="text-sm px-2 py-1 rounded-full bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-100">
-                        {confidenceToPercent(predictionResult.confidence)}% keyakinan
-                      </div>
-                      <div
-                        className={`text-sm px-2 py-1 rounded-full flex items-center gap-1 
-                        ${predictionResult.nutrition_status === "Seimbang"
-                            ? "bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-100"
-                            : "bg-amber-100 dark:bg-amber-800 text-amber-800 dark:text-amber-100"
-                          }`}
-                      >
-                        {predictionResult.nutrition_status === "Seimbang" ? (
-                          <Check className="h-3 w-3" />
-                        ) : (
-                          <X className="h-3 w-3" />
-                        )}
-                        {predictionResult.nutrition_status.replace("_", " ")}
-                      </div>
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      <strong>Kalori:</strong> {predictionResult.nutrition.kalori} kkal
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium">Protein</span>
-                        <span className="text-sm text-muted-foreground">
-                          {predictionResult.nutrition.protein}g ({nutritionValues.protein}%)
-                        </span>
-                      </div>
-                      <Progress value={nutritionValues.protein} className="h-2 bg-green-100 dark:bg-green-900/50" />
-                    </div>
-
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium">Karbohidrat</span>
-                        <span className="text-sm text-muted-foreground">
-                          {predictionResult.nutrition.karbohidrat}g ({nutritionValues.carbs}%)
-                        </span>
-                      </div>
-                      <Progress value={nutritionValues.carbs} className="h-2 bg-green-100 dark:bg-green-900/50" />
-                    </div>
-
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium">Lemak</span>
-                        <span className="text-sm text-muted-foreground">
-                          {predictionResult.nutrition.lemak}g ({nutritionValues.fat}%)
-                        </span>
-                      </div>
-                      <Progress value={nutritionValues.fat} className="h-2 bg-green-100 dark:bg-green-900/50" />
-                    </div>
-                  </div>
-
-                  {predictionResult.nutrition_status !== "Seimbang" && (
-                    <div className="mt-6 p-3 rounded-lg bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-900/50 flex items-start gap-3">
-                      <Info className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-                      <div>
-                        <h4 className="text-sm font-medium text-amber-800 dark:text-amber-300">Perhatian</h4>
-                        <p className="text-xs text-amber-700 dark:text-amber-400">
-                          Makanan ini memiliki kandungan gizi yang tidak seimbang. Pertimbangkan untuk memilih
-                          alternatif yang lebih sehat.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-48 text-center">
-                  <Salad className="h-12 w-12 text-muted-foreground mb-2 opacity-50" />
-                  <p className="text-muted-foreground">
-                    Unggah gambar makanan dan klik "Analisis Makanan" untuk melihat hasil
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {analyzed && recommendedFoods.length > 0 && (
-        <div className="mt-8">
-          <h2 className="text-2xl font-bold mb-4 text-green-700 dark:text-green-400">Rekomendasi Makanan Sehat</h2>
-          <p className="text-muted-foreground mb-6">
-            Berikut adalah rekomendasi makanan sehat yang dipilih secara acak untuk Anda
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {recommendedFoods.map((food) => (
-              <Card key={food.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="relative h-40 w-full">
-                  <Image src={food.image || "/placeholder.svg"} alt={food.name} fill className="object-cover" />
-                  <div className="absolute top-2 right-2 bg-white dark:bg-gray-800 px-2 py-1 rounded-full">
-                    <span className="text-xs font-medium">{food.calories} kkal</span>
-                  </div>
-                </div>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">{food.name}</CardTitle>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="h-4 w-4" />
-                    <span>{food.cookTime}</span>
-                    <ChefHat className="h-4 w-4 ml-2" />
-                    <span>{food.difficulty}</span>
-                  </div>
-                </CardHeader>
-                <CardContent className="pb-2">
-                  <p className="text-sm text-muted-foreground mb-3">{food.description}</p>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="secondary" className="text-xs">
-                      Protein: {food.nutrition.protein}%
-                    </Badge>
-                    <Badge variant="secondary" className="text-xs">
-                      Karbo: {food.nutrition.carbs}%
-                    </Badge>
-                    <Badge variant="secondary" className="text-xs">
-                      Lemak: {food.nutrition.fat}%
-                    </Badge>
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full border-green-200 dark:border-green-800 hover:bg-green-50 dark:hover:bg-green-900/50 hover:text-green-700 dark:hover:text-green-400"
-                      >
-                        <Eye className="mr-2 h-4 w-4" />
-                        Lihat Resep
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                      <DialogHeader>
-                        <DialogTitle className="text-xl text-green-700 dark:text-green-400">{food.name}</DialogTitle>
-                        <DialogDescription>{food.description}</DialogDescription>
-                      </DialogHeader>
-
-                      <div className="space-y-6">
-                        {/* Info Nutrisi */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                            <div className="text-lg font-bold text-green-600 dark:text-green-400">{food.calories}</div>
-                            <div className="text-xs text-muted-foreground">Kalori</div>
-                          </div>
-                          <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                            <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                              {food.nutrition.protein}%
-                            </div>
-                            <div className="text-xs text-muted-foreground">Protein</div>
-                          </div>
-                          <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                            <div className="text-lg font-bold text-orange-600 dark:text-orange-400">
-                              {food.nutrition.carbs}%
-                            </div>
-                            <div className="text-xs text-muted-foreground">Karbohidrat</div>
-                          </div>
-                          <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                            <div className="text-lg font-bold text-purple-600 dark:text-purple-400">
-                              {food.nutrition.fat}%
-                            </div>
-                            <div className="text-xs text-muted-foreground">Lemak</div>
-                          </div>
-                        </div>
-
-                        {/* Info Memasak */}
-                        <div className="flex gap-4">
-                          <div className="flex items-center gap-2">
-                            <Clock className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm">{food.cookTime}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <ChefHat className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm">{food.difficulty}</span>
-                          </div>
-                        </div>
-
-                        {/* Bahan-bahan */}
-                        <div>
-                          <h3 className="font-semibold mb-3 text-green-700 dark:text-green-400">Bahan-bahan:</h3>
-                          <ul className="space-y-1">
-                            {food.ingredients.map((ingredient, index) => (
-                              <li key={index} className="text-sm flex items-start gap-2">
-                                <span className="text-green-600 dark:text-green-400 mt-1">•</span>
-                                {ingredient}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        {/* Cara Memasak */}
-                        <div>
-                          <h3 className="font-semibold mb-3 text-green-700 dark:text-green-400">Cara Memasak:</h3>
-                          <ol className="space-y-2">
-                            {food.instructions.map((instruction, index) => (
-                              <li key={index} className="text-sm flex gap-3">
-                                <span className="bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-400 rounded-full w-6 h-6 flex items-center justify-center text-xs font-medium flex-shrink-0 mt-0.5">
-                                  {index + 1}
-                                </span>
-                                {instruction}
-                              </li>
-                            ))}
-                          </ol>
-                        </div>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </CardFooter>
-              </Card>
-            ))}
+                )}
+              </CardContent>
+            </Card>
           </div>
         </div>
-      )}
 
-      <div className="mt-8">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-green-700 dark:text-green-400">Riwayat Analisis</h2>
-          <Button onClick={loadHistoryData} variant="outline" size="sm" disabled={historyLoading}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${historyLoading ? "animate-spin" : ""}`} />
-            Refresh
-          </Button>
-        </div>
+        {analyzed && recommendedFoods.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-2xl font-bold mb-4 text-green-700 dark:text-green-400">Rekomendasi Makanan Sehat</h2>
+            <p className="text-muted-foreground mb-6">
+              Berikut adalah rekomendasi makanan sehat yang dipilih secara acak untuk Anda
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {recommendedFoods.map((food) => (
+                <Card key={food.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <div className="relative h-40 w-full">
+                    <Image src={food.image || "/placeholder.svg"} alt={food.name} fill className="object-cover" />
+                    <div className="absolute top-2 right-2 bg-white dark:bg-gray-800 px-2 py-1 rounded-full">
+                      <span className="text-xs font-medium">{food.calories} kkal</span>
+                    </div>
+                  </div>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg">{food.name}</CardTitle>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Clock className="h-4 w-4" />
+                      <span>{food.cookTime}</span>
+                      <ChefHat className="h-4 w-4 ml-2" />
+                      <span>{food.difficulty}</span>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pb-2">
+                    <p className="text-sm text-muted-foreground mb-3">{food.description}</p>
+                    <div className="flex flex-wrap gap-2">
+                      <Badge variant="secondary" className="text-xs">
+                        Protein: {food.nutrition.protein}%
+                      </Badge>
+                      <Badge variant="secondary" className="text-xs">
+                        Karbo: {food.nutrition.carbs}%
+                      </Badge>
+                      <Badge variant="secondary" className="text-xs">
+                        Lemak: {food.nutrition.fat}%
+                      </Badge>
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full border-green-200 dark:border-green-800 hover:bg-green-50 dark:hover:bg-green-900/50 hover:text-green-700 dark:hover:text-green-400"
+                        >
+                          <Eye className="mr-2 h-4 w-4" />
+                          Lihat Resep
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                        <DialogHeader>
+                          <DialogTitle className="text-xl text-green-700 dark:text-green-400">{food.name}</DialogTitle>
+                          <DialogDescription>{food.description}</DialogDescription>
+                        </DialogHeader>
 
-        {historyLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map((item) => (
-              <Card key={item} className="overflow-hidden animate-pulse">
-                <div className="h-32 w-full bg-gray-200 dark:bg-gray-700"></div>
-                <CardContent className="p-3">
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
-                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : historyError ? (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>Gagal memuat riwayat analisis: {historyError}</AlertDescription>
-          </Alert>
-        ) : historyData.length === 0 ? (
-          <Card className="p-8">
-            <div className="text-center">
-              <Salad className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
-              <h3 className="text-lg font-medium text-muted-foreground mb-2">Belum Ada Riwayat</h3>
-              <p className="text-sm text-muted-foreground">Mulai analisis makanan untuk melihat riwayat di sini</p>
+                        <div className="space-y-6">
+                          {/* Info Nutrisi */}
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                              <div className="text-lg font-bold text-green-600 dark:text-green-400">{food.calories}</div>
+                              <div className="text-xs text-muted-foreground">Kalori</div>
+                            </div>
+                            <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                              <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                                {food.nutrition.protein}%
+                              </div>
+                              <div className="text-xs text-muted-foreground">Protein</div>
+                            </div>
+                            <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                              <div className="text-lg font-bold text-orange-600 dark:text-orange-400">
+                                {food.nutrition.carbs}%
+                              </div>
+                              <div className="text-xs text-muted-foreground">Karbohidrat</div>
+                            </div>
+                            <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                              <div className="text-lg font-bold text-purple-600 dark:text-purple-400">
+                                {food.nutrition.fat}%
+                              </div>
+                              <div className="text-xs text-muted-foreground">Lemak</div>
+                            </div>
+                          </div>
+
+                          {/* Info Memasak */}
+                          <div className="flex gap-4">
+                            <div className="flex items-center gap-2">
+                              <Clock className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-sm">{food.cookTime}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <ChefHat className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-sm">{food.difficulty}</span>
+                            </div>
+                          </div>
+
+                          {/* Bahan-bahan */}
+                          <div>
+                            <h3 className="font-semibold mb-3 text-green-700 dark:text-green-400">Bahan-bahan:</h3>
+                            <ul className="space-y-1">
+                              {food.ingredients.map((ingredient, index) => (
+                                <li key={index} className="text-sm flex items-start gap-2">
+                                  <span className="text-green-600 dark:text-green-400 mt-1">•</span>
+                                  {ingredient}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          {/* Cara Memasak */}
+                          <div>
+                            <h3 className="font-semibold mb-3 text-green-700 dark:text-green-400">Cara Memasak:</h3>
+                            <ol className="space-y-2">
+                              {food.instructions.map((instruction, index) => (
+                                <li key={index} className="text-sm flex gap-3">
+                                  <span className="bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-400 rounded-full w-6 h-6 flex items-center justify-center text-xs font-medium flex-shrink-0 mt-0.5">
+                                    {index + 1}
+                                  </span>
+                                  {instruction}
+                                </li>
+                              ))}
+                            </ol>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </CardFooter>
+                </Card>
+              ))}
             </div>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {historyData.slice(0, 8).map((item, index) => (
-              <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="relative h-32 w-full">
-                  {item.imageUrl ? (
-                    <Image
-                      src={item.imageUrl || "/placeholder.svg"}
-                      alt={item.name}
-                      fill
-                      className="object-cover"
-                      onError={(e) => {
-                        e.target.src = "/placeholder.svg?height=150&width=300&text=No+Image"
-                      }}
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                      <Salad className="h-8 w-8 text-gray-400" />
-                    </div>
-                  )}
-
-                  {/* Status Badge */}
-                  <div className="absolute top-2 right-2">
-                    {item.status === "healthy" ? (
-                      <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs flex items-center gap-1">
-                        <Check className="h-3 w-3" />
-                        Sehat
-                      </div>
-                    ) : (
-                      <div className="bg-amber-500 text-white px-2 py-1 rounded-full text-xs flex items-center gap-1">
-                        <X className="h-3 w-3" />
-                        Perlu Perhatian
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <CardContent className="p-3">
-                  <div className="space-y-2">
-                    <h3 className="font-medium text-sm line-clamp-1">{item.name}</h3>
-
-                    {/* Confidence Score */}
-                    {item.confidence && (
-                      <div className="text-xs text-muted-foreground">Keyakinan: {item.confidence}%</div>
-                    )}
-
-                    {/* Calories */}
-                    {item.calories && <div className="text-xs text-muted-foreground">Kalori: {item.calories} kkal</div>}
-
-                    {/* Date */}
-                    <div className="text-xs text-muted-foreground">{formatDate(item.date)}</div>
-
-                    {/* Nutrition Info */}
-                    <div className="flex gap-1 flex-wrap">
-                      {item.nutrition.protein && (
-                        <Badge variant="outline" className="text-xs px-1 py-0">
-                          P: {item.nutrition.protein}g
-                        </Badge>
-                      )}
-                      {item.nutrition.carbs && (
-                        <Badge variant="outline" className="text-xs px-1 py-0">
-                          C: {item.nutrition.carbs}g
-                        </Badge>
-                      )}
-                      {item.nutrition.fat && (
-                        <Badge variant="outline" className="text-xs px-1 py-0">
-                          F: {item.nutrition.fat}g
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
           </div>
         )}
 
-        {/* Show more button jika ada lebih dari 8 item */}
-        {historyData.length > 8 && (
-          <div className="text-center mt-6">
-            <Button
-              variant="outline"
-              onClick={() => {
-                // Implementasi untuk show more atau pagination
-                toast({
-                  title: "Fitur Segera Hadir",
-                  description: "Fitur untuk melihat lebih banyak riwayat akan segera tersedia.",
-                })
-              }}
-            >
-              Lihat Lebih Banyak ({historyData.length - 8} lainnya)
+        <div className="mt-8">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold text-green-700 dark:text-green-400">Riwayat Analisis</h2>
+            <Button onClick={loadHistoryData} variant="outline" size="sm" disabled={historyLoading}>
+              <RefreshCw className={`h-4 w-4 mr-2 ${historyLoading ? "animate-spin" : ""}`} />
+              Refresh
             </Button>
           </div>
-        )}
+
+          {historyLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[1, 2, 3, 4].map((item) => (
+                <Card key={item} className="overflow-hidden animate-pulse">
+                  <div className="h-32 w-full bg-gray-200 dark:bg-gray-700"></div>
+                  <CardContent className="p-3">
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : historyError ? (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>Gagal memuat riwayat analisis: {historyError}</AlertDescription>
+            </Alert>
+          ) : historyData.length === 0 ? (
+            <Card className="p-8">
+              <div className="text-center">
+                <Salad className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
+                <h3 className="text-lg font-medium text-muted-foreground mb-2">Belum Ada Riwayat</h3>
+                <p className="text-sm text-muted-foreground">Mulai analisis makanan untuk melihat riwayat di sini</p>
+              </div>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {historyData.slice(0, 8).map((item, index) => (
+                <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <div className="relative h-32 w-full">
+                    {item.imageUrl ? (
+                      <Image
+                        src={item.imageUrl || "/placeholder.svg"}
+                        alt={item.name}
+                        fill
+                        className="object-cover"
+                        onError={(e) => {
+                          e.target.src = "/placeholder.svg?height=150&width=300&text=No+Image"
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                        <Salad className="h-8 w-8 text-gray-400" />
+                      </div>
+                    )}
+
+                    {/* Status Badge */}
+                    <div className="absolute top-2 right-2">
+                      {item.status === "healthy" ? (
+                        <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs flex items-center gap-1">
+                          <Check className="h-3 w-3" />
+                          Sehat
+                        </div>
+                      ) : (
+                        <div className="bg-amber-500 text-white px-2 py-1 rounded-full text-xs flex items-center gap-1">
+                          <X className="h-3 w-3" />
+                          Perlu Perhatian
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <CardContent className="p-3">
+                    <div className="space-y-2">
+                      <h3 className="font-medium text-sm line-clamp-1">{item.name}</h3>
+
+                      {/* Confidence Score */}
+                      {item.confidence && (
+                        <div className="text-xs text-muted-foreground">Keyakinan: {item.confidence}%</div>
+                      )}
+
+                      {/* Calories */}
+                      {item.calories && <div className="text-xs text-muted-foreground">Kalori: {item.calories} kkal</div>}
+
+                      {/* Date */}
+                      <div className="text-xs text-muted-foreground">{formatDate(item.date)}</div>
+
+                      {/* Nutrition Info */}
+                      <div className="flex gap-1 flex-wrap">
+                        {item.nutrition.protein && (
+                          <Badge variant="outline" className="text-xs px-1 py-0">
+                            P: {item.nutrition.protein}g
+                          </Badge>
+                        )}
+                        {item.nutrition.carbs && (
+                          <Badge variant="outline" className="text-xs px-1 py-0">
+                            C: {item.nutrition.carbs}g
+                          </Badge>
+                        )}
+                        {item.nutrition.fat && (
+                          <Badge variant="outline" className="text-xs px-1 py-0">
+                            F: {item.nutrition.fat}g
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {/* Show more button jika ada lebih dari 8 item */}
+          {historyData.length > 8 && (
+            <div className="text-center mt-6">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  // Implementasi untuk show more atau pagination
+                  toast({
+                    title: "Fitur Segera Hadir",
+                    description: "Fitur untuk melihat lebih banyak riwayat akan segera tersedia.",
+                  })
+                }}
+              >
+                Lihat Lebih Banyak ({historyData.length - 8} lainnya)
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   )
 }
