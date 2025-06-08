@@ -550,7 +550,7 @@ export default function EducationPage() {
                         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
                             Gunakan aplikasi Oishi Life untuk menganalisis makanan Anda dan mendapatkan rekomendasi personal
                         </p>
-                        <div className="flex flex-col gap-2 min-[400px]:flex-row mt-8 animate-slide-up">
+                        <div className="flex flex-col gap-2 min-[400px]:flex-row mt-8 animate-slide-up justify-center">
                             {isAuthenticated ? (
                                 <Button asChild size="lg" className="bg-green-600 hover:bg-green-700 shadow-lg">
                                     <Link href="/dashboard">Coba Analisis Makanan</Link>
