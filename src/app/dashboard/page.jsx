@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -33,7 +33,7 @@ export default function Dashboard() {
 
 function DashboardContent() {
   const { toast } = useToast()
-  const { user } = useAuth()
+  const { user, authenticatedFetch } = useAuth()
   const [selectedImage, setSelectedImage] = useState(null)
   const [analyzing, setAnalyzing] = useState(false)
   const [analyzed, setAnalyzed] = useState(false)
@@ -41,6 +41,51 @@ function DashboardContent() {
   const [predictionResult, setPredictionResult] = useState(null)
   const [predictionError, setPredictionError] = useState(null)
   const [recommendedFoods, setRecommendedFoods] = useState([])
+  // Tambahkan state untuk history
+  const [historyData, setHistoryData] = useState([])
+  const [historyLoading, setHistoryLoading] = useState(true)
+  const [historyError, setHistoryError] = useState(null)
+
+  // Fungsi untuk fetch history data
+  const fetchHistoryData = async () => {
+    try {
+      setHistoryLoading(true)
+      setHistoryError(null)
+
+      const response = await authenticatedFetch("https://becapstone-npc01011309-tu16d9a1.leapcell.dev/upload-history")
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      // Pastikan data adalah array, jika tidak buat array kosong
+      const historyArray = Array.isArray(data) ? data : data.data ? data.data : []
+      setHistoryData(historyArray)
+    } catch (error) {
+      console.error("Error fetching history:", error)
+      setHistoryError(error.message)
+
+      // Fallback ke data dummy jika API gagal
+      setHistoryData([])
+
+      toast({
+        title: "Gagal Memuat Riwayat",
+        description: "Tidak dapat memuat riwayat analisis. Menggunakan data lokal.",
+        variant: "destructive",
+      })
+    } finally {
+      setHistoryLoading(false)
+    }
+  }
+
+  // Fetch history data saat komponen mount
+  useEffect(() => {
+    if (user) {
+      fetchHistoryData()
+    }
+  }, [user])
 
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0]
@@ -379,22 +424,12 @@ function DashboardContent() {
                         {predictionResult.nutrition_status.replace("_", " ")}
                       </div>
                     </div>
-                    <div className="text-sm text-muted-foreground ml-1">
+                    <div className="text-sm text-muted-foreground">
                       <strong>Kalori:</strong> {predictionResult.nutrition.kalori} kkal
                     </div>
                   </div>
 
                   <div className="space-y-4">
-                    {/* <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium">Protein</span>
-                        <span className="text-sm text-muted-foreground">
-                          {predictionResult.nutrition.kalori}g ({nutritionValues.calories}%)
-                        </span>
-                      </div>
-                      <Progress value={nutritionValues.calories} className="h-2 bg-green-100 dark:bg-green-900/50" />
-                    </div> */}
-
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
                         <span className="text-sm font-medium">Protein</span>
@@ -584,42 +619,149 @@ function DashboardContent() {
       )}
 
       <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-4 text-green-700 dark:text-green-400">Riwayat Analisis</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map((item) => (
-            <Card key={item} className="overflow-hidden">
-              <div className="relative h-32 w-full">
-                <Image
-                  src={`/placeholder.svg?height=150&width=300`}
-                  alt={`Food history ${item}`}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <CardContent className="p-3">
-                <div className="flex justify-between items-center">
-                  <h3 className="font-medium text-sm">Makanan #{item}</h3>
-                  <div className="flex items-center gap-1 text-xs">
-                    {item % 2 === 0 ? (
-                      <>
-                        <Check className="h-3 w-3 text-green-600 dark:text-green-400" />
-                        <span className="text-green-600 dark:text-green-400">Seimbang</span>
-                      </>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-green-700 dark:text-green-400">Riwayat Analisis</h2>
+          <Button onClick={fetchHistoryData} variant="outline" size="sm" disabled={historyLoading}>
+            <RefreshCw className={`h-4 w-4 mr-2 ${historyLoading ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
+        </div>
+
+        {historyLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map((item) => (
+              <Card key={item} className="overflow-hidden animate-pulse">
+                <div className="h-32 w-full bg-gray-200 dark:bg-gray-700"></div>
+                <CardContent className="p-3">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : historyError ? (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>Gagal memuat riwayat analisis: {historyError}</AlertDescription>
+          </Alert>
+        ) : historyData.length === 0 ? (
+          <Card className="p-8">
+            <div className="text-center">
+              <Salad className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
+              <h3 className="text-lg font-medium text-muted-foreground mb-2">Belum Ada Riwayat</h3>
+              <p className="text-sm text-muted-foreground">Mulai analisis makanan untuk melihat riwayat di sini</p>
+            </div>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {historyData.slice(0, 8).map((item, index) => (
+              <Card key={item.id || index} className="overflow-hidden hover:shadow-lg transition-shadow">
+                <div className="relative h-32 w-full">
+                  {item.image_url || item.image ? (
+                    <Image
+                      src={item.image_url || item.image || "/placeholder.svg"}
+                      alt={item.food_name || item.prediction || `Food history ${index + 1}`}
+                      fill
+                      className="object-cover"
+                      onError={(e) => {
+                        e.target.src = "/placeholder.svg?height=150&width=300&text=No+Image"
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                      <Salad className="h-8 w-8 text-gray-400" />
+                    </div>
+                  )}
+
+                  {/* Status Badge */}
+                  <div className="absolute top-2 right-2">
+                    {item.nutrition_status === "Seimbang" || item.status === "healthy" ? (
+                      <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs flex items-center gap-1">
+                        <Check className="h-3 w-3" />
+                        Sehat
+                      </div>
                     ) : (
-                      <>
-                        <X className="h-3 w-3 text-red-600 dark:text-red-400" />
-                        <span className="text-red-600 dark:text-red-400">Tidak Seimbang</span>
-                      </>
+                      <div className="bg-amber-500 text-white px-2 py-1 rounded-full text-xs flex items-center gap-1">
+                        <X className="h-3 w-3" />
+                        Perlu Perhatian
+                      </div>
                     )}
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {new Date(Date.now() - item * 86400000).toLocaleDateString()}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+
+                <CardContent className="p-3">
+                  <div className="space-y-2">
+                    <h3 className="font-medium text-sm line-clamp-1">
+                      {item.food_name || item.prediction || item.label || `Makanan #${index + 1}`}
+                    </h3>
+
+                    {/* Confidence Score */}
+                    {item.confidence && (
+                      <div className="text-xs text-muted-foreground">
+                        Keyakinan: {Math.round(item.confidence * 100)}%
+                      </div>
+                    )}
+
+                    {/* Calories */}
+                    {item.calories && <div className="text-xs text-muted-foreground">Kalori: {item.calories} kkal</div>}
+
+                    {/* Date */}
+                    <div className="text-xs text-muted-foreground">
+                      {item.created_at
+                        ? new Date(item.created_at).toLocaleDateString("id-ID", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })
+                        : item.date
+                          ? new Date(item.date).toLocaleDateString("id-ID")
+                          : "Tanggal tidak tersedia"}
+                    </div>
+
+                    {/* Nutrition Info */}
+                    {(item.protein || item.carbs || item.fat) && (
+                      <div className="flex gap-1 flex-wrap">
+                        {item.protein && (
+                          <Badge variant="outline" className="text-xs px-1 py-0">
+                            P: {item.protein}g
+                          </Badge>
+                        )}
+                        {item.carbs && (
+                          <Badge variant="outline" className="text-xs px-1 py-0">
+                            C: {item.carbs}g
+                          </Badge>
+                        )}
+                        {item.fat && (
+                          <Badge variant="outline" className="text-xs px-1 py-0">
+                            F: {item.fat}g
+                          </Badge>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {/* Show more button jika ada lebih dari 8 item */}
+        {historyData.length > 8 && (
+          <div className="text-center mt-6">
+            <Button
+              variant="outline"
+              onClick={() => {
+                // Implementasi untuk show more atau pagination
+                toast({
+                  title: "Fitur Segera Hadir",
+                  description: "Fitur untuk melihat lebih banyak riwayat akan segera tersedia.",
+                })
+              }}
+            >
+              Lihat Lebih Banyak ({historyData.length - 8} lainnya)
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   )

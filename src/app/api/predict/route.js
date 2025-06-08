@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 
 export async function POST(request) {
     try {
+        const token = localStorage.getItem("token")
         // Get the form data from the request
         const formData = await request.formData()
 
@@ -9,6 +10,9 @@ export async function POST(request) {
         const response = await fetch("https://backendml-production-23c3.up.railway.app/predict", {
             method: "POST",
             body: formData,
+            headers: {
+                Authorization: `Bearer ${token}`, // Use your actual ML API key
+            }
             // Don't set Content-Type header, let the browser set it with boundary for multipart/form-data
         })
 
