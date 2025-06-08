@@ -6,6 +6,7 @@ import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { useAuth } from "@/contexts/auth-context"
 import {
     Heart,
     Shield,
@@ -26,6 +27,7 @@ import {
 export default function EducationPage() {
     const [activeSection, setActiveSection] = useState(0)
     const [isVisible, setIsVisible] = useState({})
+    const { isAuthenticated } = useAuth()
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -548,13 +550,26 @@ export default function EducationPage() {
                         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
                             Gunakan aplikasi Oishi Life untuk menganalisis makanan Anda dan mendapatkan rekomendasi personal
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Button size="lg" className="bg-green-600 hover:bg-green-700" asChild>
-                                <Link href="/register">Daftar Sekarang</Link>
-                            </Button>
-                            <Button size="lg" variant="outline" asChild>
-                                <Link href="/dashboard">Coba Analisis Makanan</Link>
-                            </Button>
+                        <div className="flex flex-col gap-2 min-[400px]:flex-row mt-8 animate-slide-up">
+                            {isAuthenticated ? (
+                                <Button asChild size="lg" className="bg-green-600 hover:bg-green-700 shadow-lg">
+                                    <Link href="/dashboard">Coba Analisis Makanan</Link>
+                                </Button>
+                            ) : (
+                                <>
+                                    <Button asChild size="lg" className="bg-green-600 hover:bg-green-700 shadow-lg">
+                                        <Link href="/register">Mulai Sekarang</Link>
+                                    </Button>
+                                    <Button
+                                        asChild
+                                        size="lg"
+                                        variant="outline"
+                                        className="bg-white/10 text-white hover:bg-white/20 border-white/30 backdrop-blur-sm"
+                                    >
+                                        <Link href="/login">Login</Link>
+                                    </Button>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
