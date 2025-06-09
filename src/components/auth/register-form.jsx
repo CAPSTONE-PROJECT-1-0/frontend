@@ -30,33 +30,32 @@ export default function RegisterForm() {
         setLoading(true)
         setError("")
 
-        // Basic validation
         if (!name || !email || !password || !confirmPassword) {
-            setError("Semua field harus diisi")
+            setError("All field should be filled")
             setLoading(false)
             return
         }
 
         if (!email.includes("@")) {
-            setError("Format email tidak valid")
+            setError("Invalid email format")
             setLoading(false)
             return
         }
 
         if (password !== confirmPassword) {
-            setError("Password dan konfirmasi password harus sama")
+            setError("Password and password confirmation should be same")
             setLoading(false)
             return
         }
 
         if (password.length < 6) {
-            setError("Password minimal 6 karakter")
+            setError("Password min 8 character")
             setLoading(false)
             return
         }
 
         if (name.length < 2) {
-            setError("Nama minimal 2 karakter")
+            setError("Name min 2 character")
             setLoading(false)
             return
         }
@@ -65,14 +64,14 @@ export default function RegisterForm() {
 
         if (result.success) {
             toast({
-                title: "Registrasi Berhasil",
+                title: "Registrasion successfull",
                 description: `Selamat datang, ${result.user.name}!`,
             })
             router.push("/dashboard")
         } else {
             setError(result.error)
             toast({
-                title: "Registrasi Gagal",
+                title: "Registrasi Failed",
                 description: result.error,
                 variant: "destructive",
             })
@@ -100,11 +99,11 @@ export default function RegisterForm() {
                         )}
 
                         <div className="space-y-2">
-                            <Label htmlFor="name">Nama Lengkap</Label>
+                            <Label htmlFor="name">Full Name</Label>
                             <Input
                                 id="name"
                                 type="text"
-                                placeholder="Masukkan nama lengkap"
+                                placeholder="Insert full name"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 disabled={loading}
@@ -116,7 +115,7 @@ export default function RegisterForm() {
                             <Input
                                 id="email"
                                 type="email"
-                                placeholder="contoh@email.com"
+                                placeholder="example@email.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 disabled={loading}
@@ -129,7 +128,7 @@ export default function RegisterForm() {
                                 <Input
                                     id="password"
                                     type={showPassword ? "text" : "password"}
-                                    placeholder="Minimal 8 karakter"
+                                    placeholder="Minimal 8 character"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     disabled={loading}
@@ -152,12 +151,12 @@ export default function RegisterForm() {
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="confirmPassword">Konfirmasi Password</Label>
+                            <Label htmlFor="confirmPassword">Password Confirmation</Label>
                             <div className="relative">
                                 <Input
                                     id="confirmPassword"
                                     type={showConfirmPassword ? "text" : "password"}
-                                    placeholder="Ulangi password"
+                                    placeholder="Repeat your password"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     disabled={loading}

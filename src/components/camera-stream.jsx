@@ -12,7 +12,6 @@ const CameraStream = ({ onCapture, onClose, onError }) => {
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState(null)
 
-    // Enable video stream on mount
     useEffect(() => {
         const enableVideoStream = async () => {
             try {
@@ -23,7 +22,7 @@ const CameraStream = ({ onCapture, onClose, onError }) => {
                     video: {
                         width: { ideal: 1280, max: 1920 },
                         height: { ideal: 720, max: 1080 },
-                        facingMode: "environment", // Use back camera on mobile
+                        facingMode: "environment", 
                     },
                 })
 
@@ -54,14 +53,13 @@ const CameraStream = ({ onCapture, onClose, onError }) => {
         enableVideoStream()
     }, [onError])
 
-    // Set video source when stream is available
+
     useEffect(() => {
         if (videoRef.current && mediaStream) {
             videoRef.current.srcObject = mediaStream
         }
     }, [videoRef, mediaStream])
 
-    // Cleanup on unmount
     useEffect(() => {
         return () => {
             if (mediaStream) {
@@ -82,17 +80,13 @@ const CameraStream = ({ onCapture, onClose, onError }) => {
             const canvas = canvasRef.current
             const context = canvas.getContext("2d")
 
-            // Set canvas dimensions to match video
             canvas.width = video.videoWidth || 640
             canvas.height = video.videoHeight || 480
 
-            // Draw the video frame to canvas
             context.drawImage(video, 0, 0, canvas.width, canvas.height)
 
-            // Convert canvas to data URL
             const imageDataUrl = canvas.toDataURL("image/jpeg", 0.8)
 
-            // Call the onCapture callback with the image data
             if (onCapture) {
                 onCapture(imageDataUrl)
             }
@@ -105,7 +99,6 @@ const CameraStream = ({ onCapture, onClose, onError }) => {
     }
 
     const handleClose = () => {
-        // Stop all tracks before closing
         if (mediaStream) {
             mediaStream.getTracks().forEach((track) => {
                 track.stop()
@@ -151,7 +144,7 @@ const CameraStream = ({ onCapture, onClose, onError }) => {
                     playsInline
                     muted
                     className="w-full h-full object-cover"
-                    style={{ transform: "scaleX(-1)" }} // Mirror effect for better UX
+                    style={{ transform: "scaleX(-1)" }} 
                 />
 
                 {/* Hidden canvas for photo capture */}

@@ -42,12 +42,11 @@ function DashboardContent() {
   const [predictionResult, setPredictionResult] = useState(null)
   const [predictionError, setPredictionError] = useState(null)
   const [recommendedFoods, setRecommendedFoods] = useState([])
-  // State untuk history
+
   const [historyData, setHistoryData] = useState([])
   const [historyLoading, setHistoryLoading] = useState(true)
   const [historyError, setHistoryError] = useState(null)
 
-  // Fungsi untuk fetch history data
   const loadHistoryData = async () => {
     try {
       setHistoryLoading(true)
@@ -55,14 +54,12 @@ function DashboardContent() {
 
       const data = await fetchAnalysisHistory(authenticatedFetch, user)
 
-      // Format data untuk tampilan
       const formattedData = data.map((item, index) => formatHistoryItem(item, index))
       setHistoryData(formattedData)
     } catch (error) {
       console.error("Error fetching history:", error)
       setHistoryError(error.message)
 
-      // Fallback ke data kosong jika API gagal
       setHistoryData([])
 
       toast({
@@ -75,7 +72,6 @@ function DashboardContent() {
     }
   }
 
-  // Fetch history data saat komponen mount
   useEffect(() => {
     if (user) {
       loadHistoryData()
@@ -128,13 +124,11 @@ function DashboardContent() {
     setShowCamera(true)
   }
 
-  // Fungsi untuk mengambil 3 menu random dari data
   const getRandomRecommendations = () => {
     const shuffled = [...recommendedFoodsData].sort(() => 0.5 - Math.random())
     return shuffled.slice(0, 3)
   }
 
-  // Fungsi untuk mengkonversi base64 ke blob
   const base64ToBlob = (base64, contentType = "", sliceSize = 512) => {
     const byteCharacters = atob(base64.split(",")[1])
     const byteArrays = []
@@ -164,7 +158,6 @@ function DashboardContent() {
       return
     }
 
-    // Validasi user
     if (!user || !user.email || !user.name) {
       toast({
         title: "Error",
@@ -178,14 +171,11 @@ function DashboardContent() {
     setPredictionError(null)
 
     try {
-      // Konversi base64 ke blob
       const imageBlob = base64ToBlob(selectedImage, "image/jpeg")
 
-      // Buat FormData untuk mengirim gambar
       const formData = new FormData()
       formData.append("file", imageBlob, "food_image.jpg")
 
-      // Kirim ke API route Next.js dengan authorization header dan user info
       const token = localStorage.getItem("token")
       const response = await fetch("/api/predict", {
         method: "POST",
@@ -200,26 +190,23 @@ function DashboardContent() {
       
       if (!response.ok) {
         console.log({err: await response.text()})
-        throw new Error("xx")
+        throw new Error("can't analyze food")
         // const errorData = await response.json().catch(() => ({}))
         // throw new Error(errorData.details || `Error: ${response.statusText}`)
       }
 
       const data = await response.json()
 
-      // Cek jika ada error dari API
       if (data.error) {
         throw new Error(data.details || data.error)
       }
 
-      // Handle response dari Flask API yang sudah diupdate
       if (data.status === "success" && data.prediction) {
         const prediction = data.prediction
 
         setPredictionResult(prediction)
         setAnalyzed(true)
 
-        // Generate random recommendations setiap kali analisis selesai
         const randomRecommendations = getRandomRecommendations()
         setRecommendedFoods(randomRecommendations)
 
@@ -228,33 +215,32 @@ function DashboardContent() {
           description: `Makanan terdeteksi: ${formatFoodLabel(prediction.label)} (${confidenceToPercent(prediction.confidence)}% yakin)`,
         })
 
-        // Refresh history data setelah analisis berhasil
         setTimeout(() => {
           loadHistoryData()
-        }, 2000) // Tunggu 2 detik untuk memastikan data tersimpan
+        }, 2000)
       } else {
-        throw new Error("Format response tidak sesuai")
+        throw new Error("Respone format not valid")
       }
     } catch (error) {
       console.error("Error analyzing food:", error)
       setPredictionError(error.message)
 
-      let errorMessage = "Terjadi kesalahan saat menganalisis gambar."
+      let errorMessage = "There is some mistake when load image."
 
       if (error.message.includes("Failed to fetch")) {
-        errorMessage = "Koneksi ke server gagal. Periksa koneksi internet Anda."
+        errorMessage = "Failed connect to server. Check your internet connection."
       } else if (error.message.includes("500")) {
-        errorMessage = "Server sedang bermasalah. Silakan coba lagi nanti."
+        errorMessage = "Internal Server Error. Try again later."
       } else if (error.message.includes("400")) {
-        errorMessage = "Data yang dikirim tidak valid. Pastikan Anda sudah login."
+        errorMessage = "Bad request, invalid data. Have you logged in?."
       } else if (error.message.includes("timeout")) {
-        errorMessage = "Analisis memakan waktu terlalu lama. Silakan coba lagi."
+        errorMessage = "Analyze image too long. Try again."
       } else if (error.message.includes("Authorization")) {
-        errorMessage = "Sesi Anda telah berakhir. Silakan login kembali."
+        errorMessage = "Session has been expired. Login again."
       }
 
       toast({
-        title: "Gagal Menganalisis",
+        title: "Analysis Failed",
         description: errorMessage,
         variant: "destructive",
       })
@@ -263,7 +249,7 @@ function DashboardContent() {
     }
   }
 
-  // Format label makanan untuk tampilan
+
   const formatFoodLabel = (label) => {
     if (!label) return ""
     return label
@@ -272,16 +258,13 @@ function DashboardContent() {
       .join(" ")
   }
 
-  // Konversi confidence ke persentase
   const confidenceToPercent = (confidence) => {
     return Math.round(confidence * 100)
   }
 
-  // Hitung persentase nutrisi berdasarkan nilai absolut
   const calculateNutritionPercentage = (nutrition) => {
     if (!nutrition) return { protein: 0, carbs: 0, fat: 0, calories: 0 }
 
-    // Hitung total makronutrien (protein + karbohidrat + lemak)
     const totalMacros = nutrition.protein + nutrition.karbohidrat + nutrition.lemak
 
     return {
@@ -292,10 +275,8 @@ function DashboardContent() {
     }
   }
 
-  // Dapatkan nilai nutrisi berdasarkan prediksi
   const nutritionValues = predictionResult ? calculateNutritionPercentage(predictionResult.nutrition) : null
 
-  // Format tanggal untuk tampilan
   const formatDate = (dateString) => {
     if (!dateString) return "Tanggal tidak tersedia"
 
@@ -315,7 +296,7 @@ function DashboardContent() {
       <div className="container py-8">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-green-700 dark:text-green-400">Dashboard Analisis Makanan</h1>
-          <p className="text-muted-foreground">Selamat datang, {user?.name}!</p>
+          <p className="text-muted-foreground">Yōkoso Nakama {user?.name}!</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -443,7 +424,7 @@ function DashboardContent() {
                 {analyzed && predictionResult ? (
                   <>
                     <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 mb-4">
-                      <h3 className="font-medium text-lg mb-1">{formatFoodLabel(predictionResult.label)}</h3>
+                      <h3 className="font-medium text-lg mb-1">Food Class : {formatFoodLabel(predictionResult.label)}</h3>
                       <div className="flex items-center gap-2 mb-2">
                         <div className="text-sm px-2 py-1 rounded-full bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-100">
                           {confidenceToPercent(predictionResult.confidence)}% keyakinan
@@ -531,7 +512,7 @@ function DashboardContent() {
           <div className="mt-8">
             <h2 className="text-2xl font-bold mb-4 text-green-700 dark:text-green-400">Rekomendasi Makanan Sehat</h2>
             <p className="text-muted-foreground mb-6">
-              Berikut adalah rekomendasi makanan sehat yang dipilih secara acak untuk Anda
+              Berikut adalah rekomendasi makanan sehat yang dipilih untuk Anda
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {recommendedFoods.map((food) => (
@@ -779,7 +760,6 @@ function DashboardContent() {
               <Button
                 variant="outline"
                 onClick={() => {
-                  // Implementasi untuk show more atau pagination
                   toast({
                     title: "Fitur Segera Hadir",
                     description: "Fitur untuk melihat lebih banyak riwayat akan segera tersedia.",

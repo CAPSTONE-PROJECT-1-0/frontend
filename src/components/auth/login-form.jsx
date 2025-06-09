@@ -27,15 +27,14 @@ export default function LoginForm() {
         setLoading(true)
         setError("")
 
-        // Basic validation
         if (!email || !password) {
-            setError("Email dan password harus diisi")
+            setError("Email and Password should be fill")
             setLoading(false)
             return
         }
 
         if (!email.includes("@")) {
-            setError("Format email tidak valid")
+            setError("Invalid email format")
             setLoading(false)
             return
         }
@@ -44,14 +43,14 @@ export default function LoginForm() {
 
         if (result.success) {
             toast({
-                title: "Login Berhasil",
-                description: `Selamat datang, ${result.user.name}!`,
+                title: "Login Successfully",
+                description: `Welcome to Oishi Life, ${result.user.name}!`,
             })
             router.push("/dashboard")
         } else {
             setError(result.error)
             toast({
-                title: "Login Gagal",
+                title: "Login Failed",
                 description: result.error,
                 variant: "destructive",
             })

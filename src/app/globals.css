@@ -292,7 +292,7 @@ textarea:focus {
   }
 }
 
-/* Enhanced Animations */
+/* Animations */
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -365,7 +365,7 @@ textarea:focus {
   animation: pulse-slow 3s ease-in-out infinite;
 }
 
-/* Hover effects */
+/* Hover */
 .hover-lift {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }

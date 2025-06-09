@@ -122,19 +122,17 @@ export function AuthProvider({ children }) {
       const data = await response.json()
 
       if (!response.ok) {
-        // Handle different error status codes
         if (response.status === 409) {
-          throw new Error("Email sudah terdaftar, silakan gunakan email lain")
+          throw new Error("Email has registered, use another email address")
         } else if (response.status === 400) {
-          throw new Error(data.message || "Data yang dikirim tidak valid")
+          throw new Error(data.message || "Bad request. invalid data input")
         } else if (response.status >= 500) {
-          throw new Error("Server sedang bermasalah, silakan coba lagi nanti")
+          throw new Error("Internal server error, try again later")
         } else {
-          throw new Error(data.message || "Registrasi gagal")
+          throw new Error(data.message || "Registrasion failed")
         }
       }
 
-      // Extract user data and token
       const userData = {
         id: data.user?.id || data.id,
         email: data.user?.email || data.email || email,
@@ -142,7 +140,6 @@ export function AuthProvider({ children }) {
         password: data.user?.password || data.password || password,
       }
 
-      // Save user data and token to state and localStorage
       setUser(userData)
 
       // if (response.ok && data.token) {
@@ -166,20 +163,17 @@ export function AuthProvider({ children }) {
   }
 
   const logout = () => {
-    // Clear user from state
+
     setUser(null)
 
-    // Remove user data and token from localStorage
     localStorage.removeItem("user")
     localStorage.removeItem("token")
   }
 
-  // Function to get auth token for API calls
   const getAuthToken = () => {
     return localStorage.getItem("token")
   }
 
-  // Function to make authenticated API calls
   const authenticatedFetch = async (url, options = {}) => {
     const token = getAuthToken()
 

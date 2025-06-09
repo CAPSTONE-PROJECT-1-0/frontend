@@ -11,11 +11,8 @@ export default function PWAInstallPrompt() {
 
     useEffect(() => {
         const handler = (e) => {
-            // Prevent the mini-infobar from appearing on mobile
             e.preventDefault()
-            // Save the event so it can be triggered later
             setDeferredPrompt(e)
-            // Show our custom install prompt
             setShowInstallPrompt(true)
         }
 
@@ -29,10 +26,8 @@ export default function PWAInstallPrompt() {
     const handleInstallClick = async () => {
         if (!deferredPrompt) return
 
-        // Show the install prompt
         deferredPrompt.prompt()
 
-        // Wait for the user to respond to the prompt
         const { outcome } = await deferredPrompt.userChoice
 
         if (outcome === "accepted") {
@@ -41,18 +36,15 @@ export default function PWAInstallPrompt() {
             console.log("User dismissed the install prompt")
         }
 
-        // Clear the deferredPrompt so it can only be used once
         setDeferredPrompt(null)
         setShowInstallPrompt(false)
     }
 
     const handleDismiss = () => {
         setShowInstallPrompt(false)
-        // Store dismissal in localStorage to not show again for a while
         localStorage.setItem("pwa-install-dismissed", Date.now().toString())
     }
 
-    // Check if user has dismissed the prompt recently
     useEffect(() => {
         const dismissed = localStorage.getItem("pwa-install-dismissed")
         if (dismissed) {

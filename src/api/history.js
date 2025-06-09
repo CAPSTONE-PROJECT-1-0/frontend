@@ -31,7 +31,6 @@ export async function fetchAnalysisHistory(authenticatedFetch, user) {
     // console.log({t: await response.text()})
     if (!response.ok) {
       if (response.status === 404) {
-        // User belum memiliki history, return array kosong
         
         console.log("No history found for user")
         return []
@@ -44,17 +43,14 @@ export async function fetchAnalysisHistory(authenticatedFetch, user) {
 
     const result = await response.json()
 
-    // Berdasarkan controller backend, data ada di result.data
     if (result.status === "success" && result.data) {
       return Array.isArray(result.data) ? result.data : [result.data]
     }
 
-    // Fallback jika format berbeda
     return Array.isArray(result) ? result : []
   } catch (error) {
     console.error("Error fetching history:", error)
 
-    // Jangan throw error, return empty array untuk UX yang lebih baik
     if (error.message.includes("User ID is required")) {
       console.warn("User ID is required for fetching history")
     }
@@ -111,7 +107,6 @@ export async function saveAnalysisToHistory(authenticatedFetch, user, analysisDa
  * @returns {Object} - Formatted history item
  */
 export function formatHistoryItem(item, index) {
-  // Parse analysisResult jika berupa string JSON
   let analysisResult = null
   if (item.analysisResult) {
     try {
@@ -135,6 +130,6 @@ export function formatHistoryItem(item, index) {
       carbs: analysisResult?.nutrition?.karbohidrat || analysisResult?.carbs || item.carbs || null,
       fat: analysisResult?.nutrition?.lemak || analysisResult?.fat || item.fat || null,
     },
-    rawData: item, // Keep original data for debugging
+    rawData: item, 
   }
 }

@@ -2,30 +2,24 @@ import { NextResponse } from "next/server"
 
 export async function POST(request) {
   try {
-    // Get the form data from the request
     const formData = await request.formData()
 
-    // Get authorization header from the request
     const authHeader = request.headers.get("authorization")
 
     if (!authHeader) {
       return NextResponse.json({ error: "Authorization token required" }, { status: 401 })
     }
 
-    // Extract user info from headers
     const userEmail = request.headers.get("x-user-email")
     const userName = request.headers.get("x-user-name")
 
-    // Validasi user info
     if (!userEmail || !userName) {
       return NextResponse.json({ error: "User email and name are required" }, { status: 400 })
     }
 
-    // Add user info to form data
     formData.append("userEmail", userEmail)
     formData.append("userName", userName)
 
-    // Forward the request to the ML API with authorization
     const response = await fetch("https://backendml-production-23c3.up.railway.app/predict", {
       method: "POST",
       body: formData,
@@ -72,7 +66,6 @@ export async function POST(request) {
   }
 }
 
-// Handle preflight requests
 export async function OPTIONS(request) {
   return new Response(null, {
     status: 200,

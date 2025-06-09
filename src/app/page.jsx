@@ -12,7 +12,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center">
-      {/* Hero Section with Background Slider */}
+      {/* Background Slider */}
       <section className="w-full py-0 relative min-h-[600px] flex items-center">
         <HeroBackgroundSlider>
           <div className="container relative z-10 flex flex-col items-center justify-center gap-4 text-center h-full min-h-[500px]">

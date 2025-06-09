@@ -6,7 +6,6 @@ import Image from "next/image"
 const HeroBackgroundSlider = ({ children }) => {
     const [currentSlide, setCurrentSlide] = useState(0)
 
-    // Array gambar makanan sehat
     const healthyFoodImages = [
         {
             src: "/images/caesar-salad.jpg",
@@ -30,11 +29,10 @@ const HeroBackgroundSlider = ({ children }) => {
         },
     ]
 
-    // Auto slide effect
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentSlide((prev) => (prev + 1) % healthyFoodImages.length)
-        }, 5000) // Change slide every 5 seconds
+        }, 5000) 
 
         return () => clearInterval(interval)
     }, [healthyFoodImages.length])
