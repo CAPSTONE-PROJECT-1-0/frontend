@@ -23,7 +23,7 @@ export default function Navbar() {
   const navItems = [
     { name: "Beranda", path: "/" },
     { name: "Edukasi", path: "/education" },
-    ...(isAuthenticated ? [{ name: "Dashboard", path: "/dashboard" }] : []),
+    ...(isAuthenticated ? [{ name: "Laman Pengguna", path: "/dashboard" }] : []),
     { name: "Tentang Kami", path: "/about" },
   ]
 
