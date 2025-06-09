@@ -152,7 +152,7 @@ export default function RegisterForm() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="confirmPassword">Konfirmasi Kata Sandi</Label>
-                            <div className="relative">
+                            <div className="relative pb-2">
                                 <Input
                                     id="confirmPassword"
                                     type={showConfirmPassword ? "text" : "password"}

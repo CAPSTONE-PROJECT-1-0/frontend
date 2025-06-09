@@ -173,7 +173,7 @@ export default function Home() {
           </p>
           {isAuthenticated ? (
             <Button asChild size="lg" className="bg-white text-green-600 hover:bg-white/90 shadow-lg">
-              <Link href="/dashboard">Buka Laman Pennguna</Link>
+              <Link href="/dashboard">Buka Laman Pengguna</Link>
             </Button>
           ) : (
             <Button asChild size="lg" className="bg-white text-green-600 hover:bg-white/90 shadow-lg">

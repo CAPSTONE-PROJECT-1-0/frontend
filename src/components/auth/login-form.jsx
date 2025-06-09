@@ -93,7 +93,7 @@ export default function LoginForm() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="password">Kata Sandi</Label>
-                            <div className="relative">
+                            <div className="relative pb-2">
                                 <Input
                                     id="password"
                                     type={showPassword ? "text" : "password"}

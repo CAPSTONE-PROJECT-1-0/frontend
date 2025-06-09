@@ -301,7 +301,7 @@ function DashboardContent() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2">
-            <Card className="h-full">
+            <Card className="h-full py-6">
               <CardHeader>
                 <CardTitle>Analisis Makanan</CardTitle>
                 <CardDescription>Unggah atau ambil foto makanan untuk dianalisis</CardDescription>
@@ -415,7 +415,7 @@ function DashboardContent() {
           </div>
 
           <div>
-            <Card className="h-full">
+            <Card className="h-full py-6">
               <CardHeader>
                 <CardTitle>Hasil Analisis</CardTitle>
                 <CardDescription>Informasi nutrisi makanan Anda</CardDescription>
@@ -516,7 +516,7 @@ function DashboardContent() {
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {recommendedFoods.map((food) => (
-                <Card key={food.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                <Card key={food.id} className="overflow-hidden hover:shadow-lg transition-shadow py-6">
                   <div className="relative h-40 w-full">
                     <Image src={food.image || "/placeholder.svg"} alt={food.name} fill className="object-cover" />
                     <div className="absolute top-2 right-2 bg-white dark:bg-gray-800 px-2 py-1 rounded-full">
@@ -653,7 +653,7 @@ function DashboardContent() {
           {historyLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {[1, 2, 3, 4].map((item) => (
-                <Card key={item} className="overflow-hidden animate-pulse">
+                <Card key={item} className="overflow-hidden animate-pulse py-6">
                   <div className="h-32 w-full bg-gray-200 dark:bg-gray-700"></div>
                   <CardContent className="p-3">
                     <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
