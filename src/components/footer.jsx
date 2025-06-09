@@ -10,7 +10,7 @@ export default function Footer() {
             <Leaf className="h-5 w-5 text-green-500" />
             <span className="text-lg font-semibold text-green-600 dark:text-green-400">Oishi Life</span>
           </div>
-          <div className="ml-1 flex gap-4 text-sm text-muted-foreground">
+          {/* <div className="ml-1 flex gap-4 text-sm text-muted-foreground">
             <Link href="/" className="hover:text-green-600 dark:hover:text-green-400">
               Home
             </Link>
@@ -20,7 +20,7 @@ export default function Footer() {
             <Link href="/about" className="hover:text-green-600 dark:hover:text-green-400">
               About us
             </Link>
-          </div>
+          </div> */}
           <p className="text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} Oishi Life. All rights reserved.
           </p>

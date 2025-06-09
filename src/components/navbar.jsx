@@ -77,7 +77,7 @@ export default function Navbar() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard">Dashboard</Link>
+                    <Link href="/dashboard">Laman Pengguna</Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className="text-red-600 dark:text-red-400">
@@ -89,7 +89,7 @@ export default function Navbar() {
             ) : (
               <div className="flex gap-2">
                 <Button variant="ghost" asChild>
-                  <Link href="/login">Login</Link>
+                  <Link href="/login">Masuk</Link>
                 </Button>
                 <Button
                   variant="default"
@@ -167,13 +167,13 @@ export default function Navbar() {
                         className="w-full justify-start text-red-600 dark:text-red-400 border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20"
                       >
                         <LogOut className="mr-2 h-4 w-4" />
-                        Keluar
+                          Keluar
                       </Button>
                     </div>
                   ) : (
                     <div className="space-y-2">
                       <Button variant="outline" className="w-full" asChild onClick={handleNavClick}>
-                        <Link href="/login">Login</Link>
+                        <Link href="/login">Masuk</Link>
                       </Button>
                       <Button
                         className="w-full bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"

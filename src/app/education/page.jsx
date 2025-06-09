@@ -468,7 +468,7 @@ export default function EducationPage() {
                                     <div>
                                         <h4 className="font-semibold mb-3 flex items-center gap-2">
                                             <Shield className="h-4 w-4" />
-                                            Tips Penting
+                                            Saran Penting
                                         </h4>
                                         <ul className="space-y-2">
                                             {condition.tips.map((tip, tipIndex) => (
@@ -495,7 +495,7 @@ export default function EducationPage() {
                         id="tips"
                         data-animate
                     >
-                        <h2 className="text-3xl md:text-4xl font-bold mb-8">Tips Harian untuk Hidup Sehat</h2>
+                        <h2 className="text-3xl md:text-4xl font-bold mb-8">Saran Harian untuk Hidup Sehat</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             {[
                                 {
@@ -566,7 +566,7 @@ export default function EducationPage() {
                                         variant="outline"
                                         className="bg-white/10 text-black hover:bg-white/20 border-green-600 shadow-lg shadow-green-600/30 backdrop-blur-sm"
                                     >
-                                        <Link href="/login">Login</Link>
+                                        <Link href="/login">Masuk</Link>
                                     </Button>
                                 </>
                             )}

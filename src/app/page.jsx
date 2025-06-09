@@ -18,17 +18,17 @@ export default function Home() {
           <div className="container relative z-10 flex flex-col items-center justify-center gap-4 text-center h-full min-h-[500px]">
             <div className="animate-fade-in">
               <h1 className="text-3xl font-bold tracking-tighter text-white sm:text-5xl md:text-6xl drop-shadow-lg">
-                Current Healthy <span className="text-green-400">Food Recommendations</span>
+                Rekomendasi<span className="text-green-400"> Makanan Sehat</span>
               </h1>
-              <p className="max-w-[700px] text-white md:text-xl mt-6 drop-shadow-md">
-                Analisis keseimbangan gizi makanan Anda dan dapatkan rekomendasi makanan sehat dengan bahan yang sama.
+              <p className="max-w-[700px] text-white md:text-xl mt-6 drop-shadow-md text-center mx-auto">
+                Analisa keseimbangan gizi makanan Anda dan dapatkan rekomendasi makanan sehat untuk anda.
               </p>
             </div>
 
             <div className="flex flex-col gap-2 min-[400px]:flex-row mt-8 animate-slide-up">
               {isAuthenticated ? (
                 <Button asChild size="lg" className="bg-green-600 hover:bg-green-700 shadow-lg">
-                  <Link href="/dashboard">Buka Dashboard</Link>
+                  <Link href="/dashboard">Buka Laman Pengguna</Link>
                 </Button>
               ) : (
                 <>
@@ -41,7 +41,7 @@ export default function Home() {
                     variant="outline"
                     className="bg-white/10 text-white hover:bg-white/20 border-white/30 backdrop-blur-sm"
                   >
-                    <Link href="/login">Login</Link>
+                    <Link href="/login">Masuk</Link>
                   </Button>
                 </>
               )}
@@ -52,7 +52,7 @@ export default function Home() {
                 <div className="flex items-center gap-2 text-amber-100">
                   <Shield className="h-5 w-5" />
                   <span className="text-sm font-medium">
-                    Silakan login terlebih dahulu untuk mengakses fitur analisis makanan
+                    Silakan Masuk terlebih dahulu untuk mengakses fitur analisis makanan
                   </span>
                 </div>
               </div>
@@ -69,11 +69,11 @@ export default function Home() {
               Fitur Utama
             </h2>
             <p className="max-w-[700px] text-muted-foreground md:text-xl">
-              Nikmati kemudahan menganalisis makanan Anda dengan teknologi canggih kami.
+              Nikmati kemudahan menganalisis makanan Anda dengan teknologi canggih dalam aplikasi Oishi Life.
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            <Card className="border-2 border-green-100 dark:border-green-900/50 hover-lift">
+            <Card className="border-2 border-green-100 dark:border-green-900/50 hover-lift py-6">
               <CardHeader className="flex flex-row items-center gap-4">
                 <Camera className="h-8 w-8 text-green-600 dark:text-green-400" />
                 <div>
@@ -87,7 +87,7 @@ export default function Home() {
                 </p>
               </CardContent>
             </Card>
-            <Card className="border-2 border-green-100 dark:border-green-900/50 hover-lift">
+            <Card className="border-2 border-green-100 dark:border-green-900/50 hover-lift py-6">
               <CardHeader className="flex flex-row items-center gap-4">
                 <Upload className="h-8 w-8 text-green-600 dark:text-green-400" />
                 <div>
@@ -101,7 +101,7 @@ export default function Home() {
                 </p>
               </CardContent>
             </Card>
-            <Card className="border-2 border-green-100 dark:border-green-900/50 hover-lift">
+            <Card className="border-2 border-green-100 dark:border-green-900/50 hover-lift py-6">
               <CardHeader className="flex flex-row items-center gap-4">
                 <Utensils className="h-8 w-8 text-green-600 dark:text-green-400" />
                 <div>
@@ -111,7 +111,7 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Terima rekomendasi makanan sehat dengan bahan yang sama berdasarkan analisis gizi.
+                  Terima rekomendasi makanan sehat berdasarkan analisis gizi.
                 </p>
               </CardContent>
             </Card>
@@ -146,7 +146,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-bold">Langkah 2</h3>
               <p className="text-muted-foreground">
-                Sistem kami menganalisis keseimbangan gizi makanan Anda secara otomatis.
+                Oishi Life menganalisis keseimbangan gizi makanan Anda secara otomatis.
               </p>
             </div>
             <div className="flex flex-col items-center text-center gap-2 hover-lift rounded-2xl">
@@ -155,7 +155,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-bold">Langkah 3</h3>
               <p className="text-muted-foreground">
-                Dapatkan rekomendasi makanan sehat dengan bahan yang sama dan simpan riwayat analisis.
+                Dapatkan rekomendasi makanan sehat dan simpan riwayat analisis.
               </p>
             </div>
           </div>
@@ -173,7 +173,7 @@ export default function Home() {
           </p>
           {isAuthenticated ? (
             <Button asChild size="lg" className="bg-white text-green-600 hover:bg-white/90 shadow-lg">
-              <Link href="/dashboard">Buka Dashboard</Link>
+              <Link href="/dashboard">Buka Laman Pennguna</Link>
             </Button>
           ) : (
             <Button asChild size="lg" className="bg-white text-green-600 hover:bg-white/90 shadow-lg">

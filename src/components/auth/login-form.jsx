@@ -69,7 +69,7 @@ export default function LoginForm() {
                     <CardTitle className="text-2xl font-bold text-green-700 dark:text-green-400">
                         Masuk ke Oishi Life
                     </CardTitle>
-                    <CardDescription>Masukkan email dan password Anda untuk mengakses dashboard</CardDescription>
+                    <CardDescription>Masukkan email dan kata sandi Anda untuk mengakses laman pengguna</CardDescription>
                 </CardHeader>
                 <form onSubmit={handleSubmit}>
                     <CardContent className="space-y-4">
@@ -92,12 +92,12 @@ export default function LoginForm() {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
+                            <Label htmlFor="password">Kata Sandi</Label>
                             <div className="relative">
                                 <Input
                                     id="password"
                                     type={showPassword ? "text" : "password"}
-                                    placeholder="Masukkan password"
+                                    placeholder="Masukkan Kata Sandi"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     disabled={loading}

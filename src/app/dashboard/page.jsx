@@ -161,7 +161,7 @@ function DashboardContent() {
     if (!user || !user.email || !user.name) {
       toast({
         title: "Error",
-        description: "Informasi pengguna tidak lengkap. Silakan login ulang.",
+        description: "Informasi pengguna tidak lengkap. Silakan masuk ulang.",
         variant: "destructive",
       })
       return
@@ -190,7 +190,7 @@ function DashboardContent() {
       
       if (!response.ok) {
         console.log({err: await response.text()})
-        throw new Error("can't analyze food")
+        throw new Error("Tidak bisa analisis makanan")
         // const errorData = await response.json().catch(() => ({}))
         // throw new Error(errorData.details || `Error: ${response.statusText}`)
       }
@@ -219,7 +219,7 @@ function DashboardContent() {
           loadHistoryData()
         }, 2000)
       } else {
-        throw new Error("Respone format not valid")
+        throw new Error("Format respon tidak benar")
       }
     } catch (error) {
       console.error("Error analyzing food:", error)
@@ -295,7 +295,7 @@ function DashboardContent() {
     <>
       <div className="container py-8">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-green-700 dark:text-green-400">Dashboard Analisis Makanan</h1>
+          <h1 className="text-3xl font-bold text-green-700 dark:text-green-400">Laman Pengguna Analisis Makanan</h1>
           <p className="text-muted-foreground">Yōkoso Nakama {user?.name}!</p>
         </div>
 
@@ -424,7 +424,7 @@ function DashboardContent() {
                 {analyzed && predictionResult ? (
                   <>
                     <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 mb-4">
-                      <h3 className="font-medium text-lg mb-1">Food Class : {formatFoodLabel(predictionResult.label)}</h3>
+                      <h3 className="font-medium text-lg mb-1">Jenis Makanan : {formatFoodLabel(predictionResult.label)}</h3>
                       <div className="flex items-center gap-2 mb-2">
                         <div className="text-sm px-2 py-1 rounded-full bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-100">
                           {confidenceToPercent(predictionResult.confidence)}% keyakinan

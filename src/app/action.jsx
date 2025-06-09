@@ -24,20 +24,20 @@ export async function registerUser(prevState, formData) {
   const confirmPassword = formData.get("confirmPassword")
 
   if (!name || !email || !password || !confirmPassword) {
-    return { error: "All fields are required" }
+    return { error: "Semua kolom wajib diisi" }
   }
 
   if (password !== confirmPassword) {
-    return { error: "Passwords do not match" }
+    return { error: "Kata sandi tidak sama" }
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailRegex.test(email)) {
-    return { error: "Please enter a valid email address" }
+    return { error: "Mohon masukan alamat email yang benar" }
   }
 
   if (password.length < 8) {
-    return { error: "Password must be at least 8 characters long" }
+    return { error: "Kata sandi minimal 8 karakter" }
   }
 
   return { success: true, error: null }

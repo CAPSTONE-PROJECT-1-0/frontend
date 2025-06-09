@@ -62,7 +62,7 @@ export default function PWAInstallPrompt() {
 
     return (
         <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:w-96">
-            <Card className="border-green-200 dark:border-green-800 shadow-lg">
+            <Card className="border-green-200 dark:border-green-800 shadow-lg py-6">
                 <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -70,9 +70,9 @@ export default function PWAInstallPrompt() {
                                 <Smartphone className="h-5 w-5 text-green-600 dark:text-green-400" />
                             </div>
                             <div>
-                                <CardTitle className="text-lg">Install Oishi Life</CardTitle>
+                                <CardTitle className="text-lg">Pasang Oishi Life</CardTitle>
                                 <CardDescription className="text-sm">
-                                    Install aplikasi untuk akses yang lebih cepat dan mudah
+                                    Pasang aplikasi untuk akses yang lebih cepat dan mudah
                                 </CardDescription>
                             </div>
                         </div>
@@ -88,7 +88,7 @@ export default function PWAInstallPrompt() {
                             className="flex-1 bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
                         >
                             <Download className="mr-2 h-4 w-4" />
-                            Install
+                            Pasang
                         </Button>
                         <Button variant="outline" onClick={handleDismiss}>
                             Nanti

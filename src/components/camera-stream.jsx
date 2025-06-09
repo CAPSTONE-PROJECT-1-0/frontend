@@ -156,7 +156,7 @@ const CameraStream = ({ onCapture, onClose, onError }) => {
                     <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
                         <div className="bg-black/50 text-white px-2 py-1 rounded text-xs flex items-center gap-1">
                             <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                            Live
+                            Siaran Lansung
                         </div>
                     </div>
 

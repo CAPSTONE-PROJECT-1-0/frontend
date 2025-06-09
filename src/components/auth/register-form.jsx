@@ -88,7 +88,7 @@ export default function RegisterForm() {
                         <Leaf className="h-12 w-12 text-green-500" />
                     </div>
                     <CardTitle className="text-2xl font-bold text-green-700 dark:text-green-400">Daftar Oishi Life</CardTitle>
-                    <CardDescription>Buat akun baru untuk mulai menganalisis makanan sehat</CardDescription>
+                    <CardDescription>Buat akun baru untuk mulai menganalisis makanan Anda</CardDescription>
                 </CardHeader>
                 <form onSubmit={handleSubmit}>
                     <CardContent className="space-y-4">
@@ -99,11 +99,11 @@ export default function RegisterForm() {
                         )}
 
                         <div className="space-y-2">
-                            <Label htmlFor="name">Full Name</Label>
+                            <Label htmlFor="name">Nama Lengkap</Label>
                             <Input
                                 id="name"
                                 type="text"
-                                placeholder="Insert full name"
+                                placeholder="Masukan Nama Lengkap"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 disabled={loading}
@@ -123,7 +123,7 @@ export default function RegisterForm() {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
+                            <Label htmlFor="password">Kata Sandi</Label>
                             <div className="relative">
                                 <Input
                                     id="password"
@@ -151,12 +151,12 @@ export default function RegisterForm() {
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="confirmPassword">Password Confirmation</Label>
+                            <Label htmlFor="confirmPassword">Konfirmasi Kata Sandi</Label>
                             <div className="relative">
                                 <Input
                                     id="confirmPassword"
                                     type={showConfirmPassword ? "text" : "password"}
-                                    placeholder="Repeat your password"
+                                    placeholder="Konfirmasi Kata Sandi Anda"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     disabled={loading}

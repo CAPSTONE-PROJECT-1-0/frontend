@@ -76,14 +76,14 @@ export default function About() {
     <>
       <div className="container py-8">
         <div className="flex flex-col items-center text-center mb-12">
-          <h1 className="text-3xl font-bold mb-4 text-green-700 dark:text-green-400">About Us</h1>
+          <h1 className="text-3xl font-bold mb-4 text-green-700 dark:text-green-400">Tentang Kami</h1>
           <p className="max-w-3xl text-muted-foreground">
-            Oishi Life is a healthy food recommendation app that combines Machine Learning with nutrition knowledge to help you make healthier food choices.
+            <strong>Oishi Life</strong> adalah aplikasi rekomendasi makanan sehat yang memanfaatkan teknologi Machine Learning dan pengetahuan nutrisi untuk membantu Anda membuat pilihan makanan yang lebih baik dan sehat. Temukan inspirasi menu bergizi, pantau keseimbangan gizi harian Anda, dan wujudkan gaya hidup sehat mulai sekarang bersama Oishi Life
           </p>
         </div>
 
         <div className="mb-16">
-          <h2 className="text-2xl font-bold mb-6 text-center text-green-700 dark:text-green-400">Our Mission</h2>
+          <h2 className="text-2xl font-bold mb-6 text-center text-green-700 dark:text-green-400">Misi Kami</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="bg-green-50 dark:bg-green-950/20 border-green-100 dark:border-green-900/50">
               <CardContent className="pt-6">
@@ -104,9 +104,9 @@ export default function About() {
                       <path d="M2.27 21.7s9.87-3.5 12.73-6.36a4.5 4.5 0 0 0-6.36-6.37C5.77 11.84 2.27 21.7 2.27 21.7zM15.42 15.42l6.37-6.37a4.5 4.5 0 0 0-6.37-6.36l-6.36 6.36a4.5 4.5 0 0 0 6.36 6.37z"></path>
                     </svg>
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">Healthcare</h3>
+                  <h3 className="text-xl font-semibold mb-2">Kesehatan</h3>
                   <p className="text-muted-foreground">
-                    Promoting healthy and balanced food through accessible technology.
+                    Mempromosikan makanan sehat dan seimbang melalui teknologi yang mudah diakses.
                   </p>
                 </div>
               </CardContent>
@@ -136,9 +136,9 @@ export default function About() {
                       <path d="M7 14v.01"></path>
                     </svg>
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">Innovation</h3>
+                  <h3 className="text-xl font-semibold mb-2">Inovasi</h3>
                   <p className="text-muted-foreground">
-                    Using Computer Vision technology to analyze and provide personalized food recommendations.
+                    Menggunakan teknologi Computer Vision untuk menganalisis dan memberikan rekomendasi makanan yang dipersonalisasi.
                   </p>
                 </div>
               </CardContent>
@@ -163,9 +163,9 @@ export default function About() {
                       <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
                     </svg>
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">Education</h3>
+                  <h3 className="text-xl font-semibold mb-2">Edukasi</h3>
                   <p className="text-muted-foreground">
-                    Provide knowledge about nutrition and nutritional balance to help make better food decisions.
+                    Memberikan pengetahuan tentang nutrisi dan keseimbangan gizi untuk membantu membuat keputusan makanan yang lebih baik.
                   </p>
                 </div>
               </CardContent>
@@ -174,12 +174,12 @@ export default function About() {
         </div>
 
         <div>
-          <h2 className="text-2xl font-bold mb-6 text-center text-green-700 dark:text-green-400">Our Team</h2>
+          <h2 className="text-2xl font-bold mb-6 text-center text-green-700 dark:text-green-400">Team Kami</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {teamMembers.map((member, index) => (
               <Card key={index} className="overflow-hidden">
-                <div className="relative h-64 w-full">
-                  <Image src={member.image || "/placeholder.svg"} alt={member.name} fill className="object-cover" />
+                <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl border shadow-sm py-0 ">
+                  <Image src={member.image || "/placeholder.svg"} alt={member.name} fill className="absolute inset-0 w-full h-full object-cover object-top"  />
                 </div>
                 <CardContent className="pt-4">
                   <h3 className="text-xl font-semibold">{member.name}</h3>
