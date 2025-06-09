@@ -304,7 +304,7 @@ export default function EducationPage() {
                         {nutritionBasics.map((item, index) => (
                             <Card
                                 key={index}
-                                className={`group hover:shadow-lg transition-all duration-300 hover:-translate-y-2 ${isVisible.nutrition ? "animate-slide-up" : ""
+                                className={`group hover:shadow-lg transition-all duration-300 hover:-translate-y-2 py-6 ${isVisible.nutrition ? "animate-slide-up" : ""
                                     }`}
                                 style={{ animationDelay: `${index * 100}ms` }}
                             >
@@ -361,7 +361,7 @@ export default function EducationPage() {
                         {superfoods.map((food, index) => (
                             <Card
                                 key={index}
-                                className={`group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden ${isVisible.superfoods ? "animate-slide-up" : ""
+                                className={`group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden  ${isVisible.superfoods ? "animate-slide-up" : ""
                                     }`}
                                 style={{ animationDelay: `${index * 100}ms` }}
                             >
@@ -426,7 +426,7 @@ export default function EducationPage() {
                         {healthConditions.map((condition, index) => (
                             <Card
                                 key={index}
-                                className={`${condition.color} hover:shadow-lg transition-all duration-300 ${isVisible.conditions ? "animate-slide-up" : ""
+                                className={`${condition.color} hover:shadow-lg transition-all duration-300 py-6 ${isVisible.conditions ? "animate-slide-up" : ""
                                     }`}
                                 style={{ animationDelay: `${index * 150}ms` }}
                             >
