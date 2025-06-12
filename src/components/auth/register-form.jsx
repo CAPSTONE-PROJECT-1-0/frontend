@@ -64,14 +64,14 @@ export default function RegisterForm() {
 
         if (result.success) {
             toast({
-                title: "Registrasion successfull",
+                title: "Registration successfull",
                 description: `Selamat datang, ${result.user.name}!`,
             })
             router.push("/dashboard")
         } else {
             setError(result.error)
             toast({
-                title: "Registrasi Failed",
+                title: "Registration Failed",
                 description: result.error,
                 variant: "destructive",
             })

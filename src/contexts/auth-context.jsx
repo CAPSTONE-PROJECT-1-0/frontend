@@ -129,7 +129,7 @@ export function AuthProvider({ children }) {
         } else if (response.status >= 500) {
           throw new Error("Internal server error, try again later")
         } else {
-          throw new Error(data.message || "Registrasion failed")
+          throw new Error(data.message || "Registration failed")
         }
       }
 

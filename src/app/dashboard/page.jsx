@@ -46,6 +46,13 @@ function DashboardContent() {
   const [historyData, setHistoryData] = useState([])
   const [historyLoading, setHistoryLoading] = useState(true)
   const [historyError, setHistoryError] = useState(null)
+  const [displayCount, setDisplayCount] = useState(8)
+
+  const handleShowMore = () => {
+    const remainingItems = historyData.length - displayCount
+    const increment = Math.min(remainingItems, 8)
+    setDisplayCount(displayCount + increment)
+  }
 
   const loadHistoryData = async () => {
     try {
@@ -677,7 +684,7 @@ function DashboardContent() {
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {historyData.slice(0, 8).map((item, index) => (
+              {historyData.slice(0, displayCount).map((item, index) => (
                 <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="relative h-32 w-full">
                     {item.imageUrl ? (
@@ -755,18 +762,19 @@ function DashboardContent() {
           )}
 
           {/* Show more button jika ada lebih dari 8 item */}
-          {historyData.length > 8 && (
+          {historyData.length > displayCount && (
             <div className="text-center mt-6">
               <Button
                 variant="outline"
-                onClick={() => {
-                  toast({
-                    title: "Fitur Segera Hadir",
-                    description: "Fitur untuk melihat lebih banyak riwayat akan segera tersedia.",
-                  })
-                }}
+                onClick={handleShowMore}
+                // onClick={() => {
+                //   toast({
+                //     title: "Fitur Segera Hadir",
+                //     description: "Fitur untuk melihat lebih banyak riwayat akan segera tersedia.",
+                //   })
+                // }}
               >
-                Lihat Lebih Banyak ({historyData.length - 8} lainnya)
+                Lihat Lebih Banyak ({historyData.length - displayCount} lainnya)
               </Button>
             </div>
           )}
