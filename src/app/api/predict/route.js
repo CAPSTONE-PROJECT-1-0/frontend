@@ -20,7 +20,7 @@ export async function POST(request) {
     formData.append("userEmail", userEmail)
     formData.append("userName", userName)
 
-    const response = await fetch("https://backendml-production-23c3.up.railway.app/predict", {
+    const response = await fetch("https://backendml-production-457c.up.railway.app/predict", {
       method: "POST",
       body: formData,
       headers: {
